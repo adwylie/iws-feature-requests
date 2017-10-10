@@ -1,11 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
 from .views import app
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////sqlite.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../sqlite.db'
 db = SQLAlchemy(app)
 
 
-class Client:
+# Many-to-many relation (through table) between FeatureRequest and ProductArea.
+fr_pa_map = db.Table(
+    'fr_pa_map',
+    db.Column('feature_request_id', db.Integer, db.ForeignKey('feature_request.id'), primary_key=True),
+    db.Column('product_area_id', db.Integer, db.ForeignKey('product_area.id'), primary_key=True)
+)
+
+
+class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), nullable=False)
 
@@ -15,7 +23,7 @@ class Client:
 
 class FeatureRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('Client.id'))
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
     title = db.Column(db.String(60), nullable=False)
@@ -32,21 +40,14 @@ class FeatureRequest(db.Model):
     # TODO: Test constraints.
     __table_args__ = (
         db.CheckConstraint(priority > 0, name='positive_priority'),
-        db.UniqueConstraint('client_id', 'priority', 'unique_client_priorities')
+        db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
 
     def __str__(self):
         return '<FeatureRequest {}>'.format(self.title)
 
 
-# Many-to-many relation (through table) between FeatureRequest and ProductArea.
-fr_pa_map = db.Table('fr_pa_map',
-    db.Column('feature_request_id', db.Integer, db.ForeignKey('FeatureRequest.id')),
-    db.Column('product_area_id', db.Integer, db.ForeignKey('ProductArea.id'))
-)
-
-
-class ProductArea:
+class ProductArea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), nullable=False)
 
