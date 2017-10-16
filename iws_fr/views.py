@@ -1,7 +1,8 @@
-from flask import Flask
-app = Flask(__name__)
+from .settings import app
 
 
+# TODO: Templates.
+# TODO: Model forms?
 @app.route('/')
 def main():
     return "Hello World!"

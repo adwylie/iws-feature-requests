@@ -1,0 +1,10 @@
+[
+  {
+    "table": "client",
+    "records": [
+      { "id": 1, "name": "MikeRoweSoft" },
+      { "id": 2, "name": "Acme Corporation" },
+      { "id": 3, "name": "Initech" }
+    ]
+  }
+]

@@ -1,15 +1,9 @@
 import datetime
 import textwrap
-from flask_sqlalchemy import SQLAlchemy
-from .views import app
+import flask_restless
+from .settings import app
+from .settings import db
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../sqlite.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-# TODO: tests
-# TODO: model forms?, templates?
-# TODO: settings.py?
 
 # Many-to-many relation (through table) between FeatureRequest and ProductArea.
 fr_pa_map = db.Table(
@@ -71,10 +65,10 @@ class Comment(db.Model):
     )
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('comments'), lazy=True)
+    user = db.relationship('User', backref=db.backref('user_comments'), lazy=True)
 
     feature_request_id = db.Column(db.Integer, db.ForeignKey('feature_request.id'), nullable=False)
-    feature_request = db.relationship('FeatureRequest', backref=db.backref('comments'), lazy=True)
+    feature_request = db.relationship('FeatureRequest', backref=db.backref('feature_comments'), lazy=True)
 
     def __str__(self):
         # String representation includes user name, feature request number,
@@ -106,3 +100,9 @@ class ProductArea(db.Model):
 
     def __str__(self):
         return '<ProductArea {}>'.format(self.name)
+
+
+# Set up restful api.
+manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
+manager.create_api(Comment, methods=['GET', 'POST', 'DELETE'])
+manager.create_api(FeatureRequest, methods=['GET', 'POST', 'DELETE'])
