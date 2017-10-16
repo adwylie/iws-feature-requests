@@ -1,0 +1,11 @@
+[
+  {
+    "table": "product_area",
+    "records": [
+      { "id": 1, "name": "Policies" },
+      { "id": 2, "name": "Billing" },
+      { "id": 3, "name": "Claims" },
+      { "id": 4, "name": "Reports" }
+    ]
+  }
+]

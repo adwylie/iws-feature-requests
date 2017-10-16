@@ -1,0 +1,14 @@
+[
+  {
+    "table": "user",
+    "records": [
+      { "id": 1, "first_name": "Mike", "last_name": "Rowe" },
+      { "id": 2, "first_name": "Peter", "last_name": "Gibbons" },
+      { "id": 3, "first_name": "Michael", "last_name": "Bolton" },
+      { "id": 4, "first_name": "Bill", "last_name": "Lumbergh" },
+      { "id": 5, "first_name": "Wile E.", "last_name": "Coyote" },
+      { "id": 6, "first_name": "Road", "last_name": "Runner" },
+      { "id": 7, "first_name": "Bugs", "last_name": "Bunny" }
+    ]
+  }
+]

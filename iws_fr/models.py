@@ -1,6 +1,7 @@
 import datetime
 import textwrap
 import flask_restless
+from sqlalchemy.ext.hybrid import hybrid_property
 from .settings import app
 from .settings import db
 
@@ -85,9 +86,9 @@ class User(db.Model):
     first_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
 
-    @property
+    @hybrid_property
     def full_name(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return self.first_name + ' ' + self.last_name
 
     def __str__(self):
         return '<User {}>'.format(self.full_name)
