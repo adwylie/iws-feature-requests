@@ -9,6 +9,18 @@ from .models import Client
 
 
 # TODO: Write more tests!
+# TODO: Fixtures:
+#  Default users, some product areas,
+# TODO: Test:
+#  DB-level FR positive priority constraint,
+#  DB-level FR unique priority constraint,
+#  App-level FR priority inserts,
+#  App-level FR target_date >= today,
+#  App-level FR identifier auto-set on save (wrt/ client),
+#  DB-level Comment default created datetime,
+#  Restful api available methods??,
+#  User full_name property read, set not allowed,
+
 class FlaskTestCase(unittest.TestCase, FixturesMixin):
     fixtures = ['clients.json']
     app, db = app, db  # Required setup for fixtures to work.

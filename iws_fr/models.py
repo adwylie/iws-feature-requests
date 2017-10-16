@@ -35,8 +35,8 @@ class FeatureRequest(db.Model):
     identifier = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(60), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    priority = db.Column(db.Integer, nullable=False)  # TODO: update priorities on save
-    target_date = db.Column(db.Date, nullable=False)  # TODO: must be >= today
+    priority = db.Column(db.Integer, nullable=False)
+    target_date = db.Column(db.Date, nullable=False)
     product_areas = db.relationship(
         'ProductArea',
         secondary=fr_pa_map,
@@ -44,7 +44,6 @@ class FeatureRequest(db.Model):
         backref=db.backref('feature_requests', lazy=True)
     )
 
-    # TODO: Test constraints.
     __table_args__ = (
         db.CheckConstraint(priority > 0, name='positive_priority'),
         db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
@@ -58,7 +57,7 @@ class Comment(db.Model):
     """Comment on a feature request."""
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
-    created = db.Column(  # TODO: TEST default datetime value.
+    created = db.Column(
         db.DateTime,
         default=datetime.datetime.utcnow,
         nullable=False
