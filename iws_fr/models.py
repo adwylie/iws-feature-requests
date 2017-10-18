@@ -29,7 +29,7 @@ class FeatureRequest(db.Model):
     The FR is submitted by a user referencing a particular client's software.
 
     """
-    def new_identifier(context):
+    def next_identifier(context):
         """Return a new default identifier for a FR with respect to a client."""
         max_identifier = db.session.query(
             func.max(FeatureRequest.identifier)
@@ -41,6 +41,23 @@ class FeatureRequest(db.Model):
 
         return next_identifier
 
+    def next_priority(context):
+        """Return a new default priority for a FR with respect to a client.
+
+        Smaller-valued priorities are 'higher', so return the maximum value
+        plus one -- the lowest priority.
+
+        """
+        max_priority = db.session.query(
+            func.max(FeatureRequest.priority)
+        ).filter(
+            FeatureRequest.client_id == context.current_parameters['client_id']
+        ).scalar()
+
+        next_priority = 1 if max_priority is None else max_priority + 1
+
+        return next_priority
+
     id = db.Column(db.Integer, primary_key=True)
 
     # Each FR is created by a user in reference to a particular client's software.
@@ -50,10 +67,10 @@ class FeatureRequest(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
-    identifier = db.Column(db.Integer, default=new_identifier, nullable=False)
+    identifier = db.Column(db.Integer, default=next_identifier, nullable=False)
     title = db.Column(db.String(60), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    priority = db.Column(db.Integer, nullable=False)
+    priority = db.Column(db.Integer, default=next_priority, nullable=False)
     target_date = db.Column(db.Date, nullable=False)
     product_areas = db.relationship(
         'ProductArea',
@@ -73,7 +90,7 @@ class FeatureRequest(db.Model):
         # TODO: otherwise supply on pre-save insert hook.
         # db.CheckConstraint(target_date > datetime.datetime.now, name='future_target_date'),
         db.CheckConstraint(priority > 0, name='positive_priority'),
-        db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifier'),
+        db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifiers'),
         db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
 

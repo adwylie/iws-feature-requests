@@ -57,7 +57,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
             **common_values
         )
         negative_one_priority = FeatureRequest(
-            title="Separate display of pending and posted transactions.",
+            title='Separate display of pending and posted transactions.',
             priority=-1,
             **common_values
         )
@@ -138,8 +138,41 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         # insert at 6 (inserted)
         pass
 
+    def test_feature_request_priority_default(self):
+        """Ensure that FRs without priority are given lowest priority."""
+        # Bill Lumbergh continues to attempt creating some FRs.
+        common_values = {
+            'user_id': 4,
+            'client_id': 3,
+            'target_date': datetime.datetime(2000, 1, 1)
+        }
+        fr1_title = 'Allow security answers to contain spaces.'
+        fr1 = FeatureRequest(title=fr1_title, **common_values)
+
+        fr2_title = "Add a 'keep me logged in' feature."
+        fr2 = FeatureRequest(title=fr2_title, **common_values)
+
+        self.db.session.add(fr1)
+        self.db.session.commit()
+
+        saved_fr1 = FeatureRequest.query.filter_by(title=fr1_title).first()
+        assert saved_fr1
+        assert saved_fr1.priority == 1
+
+        self.db.session.add(fr2)
+        self.db.session.commit()
+
+        saved_fr2 = FeatureRequest.query.filter_by(title=fr2_title).first()
+        assert saved_fr2
+        assert saved_fr2.priority == 2
+
     def test_feature_request_target_date_validation(self):
-        # App-level FR target_date >= today.
+        """Ensure that FRs cannot be created with a past target_date."""
+        # Bill Lumbergh continues to attempt creating some FRs.
+        common_values = {
+            'user_id': 4,
+            'client_id': 3,
+        }
         # inserted < now (error)
         # inserted at now (inserted)
         # inserted at now + random (inserted)
