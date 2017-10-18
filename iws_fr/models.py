@@ -2,6 +2,7 @@ import datetime
 import textwrap
 import flask_restless
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql import func
 from .settings import app
 from .settings import db
 
@@ -23,19 +24,35 @@ class Client(db.Model):
 
 
 class FeatureRequest(db.Model):
+    """Represents a submitted feature request (FR).
+
+    The FR is submitted by a user referencing a particular client's software.
+
+    """
+    def new_identifier(context):
+        """Return a new default identifier for a FR with respect to a client."""
+        max_identifier = db.session.query(
+            func.max(FeatureRequest.identifier)
+        ).filter(
+            FeatureRequest.client_id == context.current_parameters['client_id']
+        ).scalar()
+
+        next_identifier = 1 if max_identifier is None else max_identifier + 1
+
+        return next_identifier
+
     id = db.Column(db.Integer, primary_key=True)
 
-    # Each feature request is created by a user on behalf of a client.
+    # Each FR is created by a user in reference to a particular client's software.
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('comments'), lazy=True)
 
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
-    # Identifier is a per-client feature request id, auto-set if not provided.
-    identifier = db.Column(db.Integer, nullable=False)
+    identifier = db.Column(db.Integer, default=new_identifier, nullable=False)
     title = db.Column(db.String(60), nullable=False)
-    description = db.Column(db.Text, nullable=False)  # TODO: Can be null?
+    description = db.Column(db.Text, nullable=True)
     priority = db.Column(db.Integer, nullable=False)
     target_date = db.Column(db.Date, nullable=False)
     product_areas = db.relationship(
@@ -53,6 +70,7 @@ class FeatureRequest(db.Model):
 
     __table_args__ = (
         db.CheckConstraint(priority > 0, name='positive_priority'),
+        db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifier'),
         db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
 

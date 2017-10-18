@@ -3,6 +3,7 @@ import os
 import unittest
 import tempfile
 from flask_fixtures import FixturesMixin
+from sqlalchemy.exc import IntegrityError
 
 from .settings import app
 from .settings import db
@@ -58,20 +59,22 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
     def test_feature_request_identifier_increment(self):
         """Test that when inserting a FeatureRequest its 'identifier' is set."""
         # Wile E. Coyote has some issues with ACME products.
+        dynamite_fr_title = 'Add Pause Function to Dynamite Timer.'
         dynamite_fr = FeatureRequest(
             user_id=5,
             client_id=2,
-            title='Add Pause Function to Dynamite Timer.',
+            title=dynamite_fr_title,
             description='Static fuse length does not handle all situations, '
                         'and is unsafe if apparatus changes are required after '
                         'countdown begins.',
             priority=1,
             target_date=datetime.datetime(2000, 1, 1)
         )
+        boulders_fr_title = 'Allow varying water requirement to Dehydrated Boulders.'
         boulders_fr = FeatureRequest(
             user_id=5,
             client_id=2,
-            title='Allow varying water requirement to Dehydrated Boulders.',
+            title=boulders_fr_title,
             description='Instead of fixed water requirement for a specific '
                         'boulder size, allow amount of water to determine '
                         'boulder size.',
@@ -82,39 +85,62 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
             user_id=5,
             client_id=2,
             identifier=2,  # Incorrect identifier since inserted third.
-            title="This doesn't matter.",
-            description="Whatever.",
+            title="An invalid feature request.",
             priority=3,
             target_date=datetime.datetime(2000, 1, 1)
         )
+        roller_skates_fr_title = 'Improve braking on rocked-powered roller skates.'
         roller_skates_fr = FeatureRequest(
             user_id=5,
             client_id=2,
             identifier=3,  # Correct identifier since inserted third.
-            title='Improve braking on rocked-powered roller skates.',
+            title=roller_skates_fr_title,
             description="Current skates don't even have brakes, how this "
                         "product passed safety standards is beyond me.",
             priority=3,
             target_date=datetime.datetime(2000, 1, 1)
         )
 
-        # TODO: Complete below as code implemented.
-        # FRs inserted without identifiers should have them added automatically,
-        # even when multiple objects are in the same commit.
+        # FRs inserted without identifiers should have them added automatically.
+        # The client_id + priority relation is unique, so we'll query by that
+        # to check correct object saving.
         self.db.session.add(dynamite_fr)
+        self.db.session.commit()
+
+        saved_dynamite = FeatureRequest.query.filter_by(client_id=2, priority=1).first()
+        assert saved_dynamite.title == dynamite_fr_title
+        assert saved_dynamite.identifier == 1
+
         self.db.session.add(boulders_fr)
+        self.db.session.commit()
+
+        saved_boulders = FeatureRequest.query.filter_by(client_id=2, priority=2).first()
+        assert saved_boulders.title == boulders_fr_title
+        assert saved_boulders.identifier == 2
 
         # FR with incorrect identifier should throw error.
-        self.db.session.add(invalid_fr)
+        exception = False
+        try:
+            self.db.session.add(invalid_fr)
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+            exception = True
+
+        assert exception
 
         # FR with correct (pre-incremented ) identifier should bo okay.
         self.db.session.add(roller_skates_fr)
-
         self.db.session.commit()
+
+        saved_roller_skates = FeatureRequest.query.filter_by(client_id=2, priority=3).first()
+        assert saved_roller_skates.title == roller_skates_fr_title
+        assert saved_roller_skates.identifier == 3
+
+        # TODO: shouldn't be able to add identifier with space below it.
 
     def test_feature_request_comment_created_default(self):
         """Test that the FeatureRequest and Comment 'created' fields are set."""
-        # TODO: Update below wrt/ automatic identifier, priority fields.
         # Michael Bolton creates first FR for Initech, no product areas.
         fr = FeatureRequest(
             user_id=3,
