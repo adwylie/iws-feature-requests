@@ -47,20 +47,74 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         # DB-level FR unique priority constraint.
         pass
 
-    def test_feature_request_priority_creation(self):
+    def test_feature_request_priority_validation(self):
         # App-level FR priority inserts.
         pass
 
-    def test_feature_request_target_date_default(self):
+    def test_feature_request_target_date_validation(self):
         # App-level FR target_date >= today.
         pass
 
     def test_feature_request_identifier_increment(self):
-        # App-level FR identifier auto-set on save (wrt/ client).
-        pass
+        """Test that when inserting a FeatureRequest its 'identifier' is set."""
+        # Wile E. Coyote has some issues with ACME products.
+        dynamite_fr = FeatureRequest(
+            user_id=5,
+            client_id=2,
+            title='Add Pause Function to Dynamite Timer.',
+            description='Static fuse length does not handle all situations, '
+                        'and is unsafe if apparatus changes are required after '
+                        'countdown begins.',
+            priority=1,
+            target_date=datetime.datetime(2000, 1, 1)
+        )
+        boulders_fr = FeatureRequest(
+            user_id=5,
+            client_id=2,
+            title='Allow varying water requirement to Dehydrated Boulders.',
+            description='Instead of fixed water requirement for a specific '
+                        'boulder size, allow amount of water to determine '
+                        'boulder size.',
+            priority=2,
+            target_date=datetime.datetime(2000, 1, 1)
+        )
+        invalid_fr = FeatureRequest(
+            user_id=5,
+            client_id=2,
+            identifier=2,  # Incorrect identifier since inserted third.
+            title="This doesn't matter.",
+            description="Whatever.",
+            priority=3,
+            target_date=datetime.datetime(2000, 1, 1)
+        )
+        roller_skates_fr = FeatureRequest(
+            user_id=5,
+            client_id=2,
+            identifier=3,  # Correct identifier since inserted third.
+            title='Improve braking on rocked-powered roller skates.',
+            description="Current skates don't even have brakes, how this "
+                        "product passed safety standards is beyond me.",
+            priority=3,
+            target_date=datetime.datetime(2000, 1, 1)
+        )
+
+        # TODO: Complete below as code implemented.
+        # FRs inserted without identifiers should have them added automatically,
+        # even when multiple objects are in the same commit.
+        self.db.session.add(dynamite_fr)
+        self.db.session.add(boulders_fr)
+
+        # FR with incorrect identifier should throw error.
+        self.db.session.add(invalid_fr)
+
+        # FR with correct (pre-incremented ) identifier should bo okay.
+        self.db.session.add(roller_skates_fr)
+
+        self.db.session.commit()
 
     def test_feature_request_comment_created_default(self):
         """Test that the FeatureRequest and Comment 'created' fields are set."""
+        # TODO: Update below wrt/ automatic identifier, priority fields.
         # Michael Bolton creates first FR for Initech, no product areas.
         fr = FeatureRequest(
             user_id=3,

@@ -32,10 +32,10 @@ class FeatureRequest(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
-    # Identifier is a per-client feature request id.
+    # Identifier is a per-client feature request id, auto-set if not provided.
     identifier = db.Column(db.Integer, nullable=False)
     title = db.Column(db.String(60), nullable=False)
-    description = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=False)  # TODO: Can be null?
     priority = db.Column(db.Integer, nullable=False)
     target_date = db.Column(db.Date, nullable=False)
     product_areas = db.relationship(
