@@ -24,6 +24,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         app.testing = True
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
         self.app = app.test_client()
+        self.base_date = datetime.datetime.now() + datetime.timedelta(days=1)
 
         db.create_all()
 
@@ -48,7 +49,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         common_values = {
             'user_id': 4,
             'client_id': 3,
-            'target_date': datetime.datetime(2000, 1, 1)
+            'target_date': self.base_date
         }
 
         negative_priority = FeatureRequest(
@@ -114,14 +115,14 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         self.db.session.add(one_priority)
         self.db.session.commit()
 
-        saved_one_priority = FeatureRequest.query.filter_by(title=one_priority_title).first()
+        saved_one_priority = FeatureRequest.query.filter_by(title=one_priority_title).one()
         assert saved_one_priority
         assert saved_one_priority.priority == 1
 
         self.db.session.add(positive_priority)
         self.db.session.commit()
 
-        saved_positive_priority = FeatureRequest.query.filter_by(title=positive_priority_title).first()
+        saved_positive_priority = FeatureRequest.query.filter_by(title=positive_priority_title).one()
         assert saved_positive_priority
         assert saved_positive_priority.priority == positive_priority_value
 
@@ -144,7 +145,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         common_values = {
             'user_id': 4,
             'client_id': 3,
-            'target_date': datetime.datetime(2000, 1, 1)
+            'target_date': self.base_date
         }
         fr1_title = 'Allow security answers to contain spaces.'
         fr1 = FeatureRequest(title=fr1_title, **common_values)
@@ -155,28 +156,61 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         self.db.session.add(fr1)
         self.db.session.commit()
 
-        saved_fr1 = FeatureRequest.query.filter_by(title=fr1_title).first()
+        saved_fr1 = FeatureRequest.query.filter_by(title=fr1_title).one()
         assert saved_fr1
         assert saved_fr1.priority == 1
 
         self.db.session.add(fr2)
         self.db.session.commit()
 
-        saved_fr2 = FeatureRequest.query.filter_by(title=fr2_title).first()
+        saved_fr2 = FeatureRequest.query.filter_by(title=fr2_title).one()
         assert saved_fr2
         assert saved_fr2.priority == 2
 
     def test_feature_request_target_date_validation(self):
         """Ensure that FRs cannot be created with a past target_date."""
         # Bill Lumbergh continues to attempt creating some FRs.
-        common_values = {
-            'user_id': 4,
-            'client_id': 3,
-        }
-        # inserted < now (error)
-        # inserted at now (inserted)
-        # inserted at now + random (inserted)
-        pass
+        common_values = {'user_id': 4, 'client_id': 3}
+
+        # Past target date.
+        past_exception = False
+        try:
+            FeatureRequest(
+                title='Add RRSP account interface to web client.',
+                target_date=datetime.datetime.now() - datetime.timedelta(days=1),
+                **common_values
+            )
+        except ValueError:
+            past_exception = True
+
+        assert past_exception
+
+        # Present target date.
+        present_exception = False
+        try:
+            FeatureRequest(
+                title='Add TFSA account interface to web client.',
+                target_date=datetime.datetime.now(),
+                **common_values
+            )
+        except ValueError:
+            present_exception = True
+
+        assert present_exception
+
+        # Future target date.
+        future_title = 'Add mortgage products interface to web client.'
+        future = FeatureRequest(
+            title=future_title,
+            target_date=datetime.datetime.now() + datetime.timedelta(days=1),
+            **common_values
+        )
+
+        self.db.session.add(future)
+        self.db.session.commit()
+
+        saved_future = FeatureRequest.query.filter_by(title=future_title).one()
+        assert saved_future
 
     def test_feature_request_identifier_increment(self):
         """Test that when inserting a FeatureRequest its 'identifier' is set."""
@@ -190,7 +224,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
                         'and is unsafe if apparatus changes are required after '
                         'countdown begins.',
             priority=1,
-            target_date=datetime.datetime(2000, 1, 1)
+            target_date=self.base_date
         )
         boulders_fr_title = 'Allow varying water requirement to Dehydrated Boulders.'
         boulders_fr = FeatureRequest(
@@ -201,7 +235,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
                         'boulder size, allow amount of water to determine '
                         'boulder size.',
             priority=2,
-            target_date=datetime.datetime(2000, 1, 1)
+            target_date=self.base_date
         )
         invalid_fr = FeatureRequest(
             user_id=5,
@@ -209,7 +243,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
             identifier=2,  # Incorrect identifier since inserted third.
             title="An invalid feature request.",
             priority=3,
-            target_date=datetime.datetime(2000, 1, 1)
+            target_date=self.base_date
         )
         roller_skates_fr_title = 'Improve braking on rocked-powered roller skates.'
         roller_skates_fr = FeatureRequest(
@@ -220,7 +254,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
             description="Current skates don't even have brakes, how this "
                         "product passed safety standards is beyond me.",
             priority=3,
-            target_date=datetime.datetime(2000, 1, 1)
+            target_date=self.base_date
         )
 
         # FRs inserted without identifiers should have them added automatically.
@@ -229,14 +263,14 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         self.db.session.add(dynamite_fr)
         self.db.session.commit()
 
-        saved_dynamite = FeatureRequest.query.filter_by(client_id=2, priority=1).first()
+        saved_dynamite = FeatureRequest.query.filter_by(client_id=2, priority=1).one()
         assert saved_dynamite.title == dynamite_fr_title
         assert saved_dynamite.identifier == 1
 
         self.db.session.add(boulders_fr)
         self.db.session.commit()
 
-        saved_boulders = FeatureRequest.query.filter_by(client_id=2, priority=2).first()
+        saved_boulders = FeatureRequest.query.filter_by(client_id=2, priority=2).one()
         assert saved_boulders.title == boulders_fr_title
         assert saved_boulders.identifier == 2
 
@@ -255,7 +289,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         self.db.session.add(roller_skates_fr)
         self.db.session.commit()
 
-        saved_roller_skates = FeatureRequest.query.filter_by(client_id=2, priority=3).first()
+        saved_roller_skates = FeatureRequest.query.filter_by(client_id=2, priority=3).one()
         assert saved_roller_skates.title == roller_skates_fr_title
         assert saved_roller_skates.identifier == 3
 
@@ -271,7 +305,7 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
             title='Convert 2-digit dates to 4-digit.',
             description='Prepare for Y2K by updating date storage format',
             priority=1,
-            target_date=datetime.datetime(1999, 12, 31, 23, 59, 59)
+            target_date=self.base_date
         )
 
         # Bill Lumbergh replies in his typical way.
@@ -284,8 +318,8 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         self.db.session.add(comment)
         self.db.session.commit()
 
-        saved_fr = FeatureRequest.query.filter_by(client_id=3, identifier=1).first()
-        saved_comment = Comment.query.filter_by(user_id=4, feature_request_id=4).first()
+        saved_fr = FeatureRequest.query.filter_by(client_id=3, identifier=1).one()
+        saved_comment = Comment.query.filter_by(user_id=4, feature_request_id=4).one()
 
         assert saved_fr.created
         assert saved_comment.created

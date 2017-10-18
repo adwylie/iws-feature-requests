@@ -2,6 +2,7 @@ import datetime
 import textwrap
 import flask_restless
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
 from sqlalchemy.sql import func
 from .settings import app
 from .settings import db
@@ -86,16 +87,20 @@ class FeatureRequest(db.Model):
     )
 
     __table_args__ = (
-        # TODO: Can we set as callable in constraint?,
-        # TODO: otherwise supply on pre-save insert hook.
-        # db.CheckConstraint(target_date > datetime.datetime.now, name='future_target_date'),
         db.CheckConstraint(priority > 0, name='positive_priority'),
         db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifiers'),
         db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
 
-    # TODO: Pre-save validation hook function?
-    # http://docs.sqlalchemy.org/en/latest/orm/events.html
+    @validates('target_date')
+    def validate_future_date(self, key, date):
+        """Ensure the given date(s) occur in the future."""
+        if date <= datetime.datetime.now():
+            raise ValueError(
+                'Value for field {} must occur in the future.'.format(key)
+            )
+
+        return date
 
     def __str__(self):
         return '<FeatureRequest {}>'.format(self.title)
