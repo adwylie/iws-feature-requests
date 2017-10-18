@@ -33,7 +33,7 @@ class FeatureRequest(db.Model):
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
     # Identifier is a per-client feature request id.
-    identifier = db.Column(db.Integer, primary_key=True)
+    identifier = db.Column(db.Integer, nullable=False)
     title = db.Column(db.String(60), nullable=False)
     description = db.Column(db.Text, nullable=False)
     priority = db.Column(db.Integer, nullable=False)
@@ -43,6 +43,12 @@ class FeatureRequest(db.Model):
         secondary=fr_pa_map,
         lazy='subquery',
         backref=db.backref('feature_requests', lazy=True)
+    )
+
+    created = db.Column(
+        db.DateTime,
+        default=datetime.datetime.utcnow,
+        nullable=False
     )
 
     __table_args__ = (
@@ -57,18 +63,19 @@ class FeatureRequest(db.Model):
 class Comment(db.Model):
     """Comment on a feature request."""
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
-    created = db.Column(
-        db.DateTime,
-        default=datetime.datetime.utcnow,
-        nullable=False
-    )
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('user_comments'), lazy=True)
 
     feature_request_id = db.Column(db.Integer, db.ForeignKey('feature_request.id'), nullable=False)
     feature_request = db.relationship('FeatureRequest', backref=db.backref('feature_comments'), lazy=True)
+
+    text = db.Column(db.Text, nullable=False)
+    created = db.Column(
+        db.DateTime,
+        default=datetime.datetime.utcnow,
+        nullable=False
+    )
 
     def __str__(self):
         # String representation includes user name, feature request number,

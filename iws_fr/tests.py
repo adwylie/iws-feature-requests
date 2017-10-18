@@ -1,3 +1,4 @@
+import datetime
 import os
 import unittest
 import tempfile
@@ -5,7 +6,7 @@ from flask_fixtures import FixturesMixin
 
 from .settings import app
 from .settings import db
-from .models import (Client, ProductArea, User)
+from .models import (Client, Comment, FeatureRequest, ProductArea, User)
 
 # Disable info logging in flask_fixtures library.
 import logging
@@ -58,9 +59,34 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         # App-level FR identifier auto-set on save (wrt/ client).
         pass
 
-    def test_comment_created_default(self):
-        """Test that the Comment.created field is set by default."""
-        pass
+    def test_feature_request_comment_created_default(self):
+        """Test that the FeatureRequest and Comment 'created' fields are set."""
+        # Michael Bolton creates first FR for Initech, no product areas.
+        fr = FeatureRequest(
+            user_id=3,
+            client_id=3,
+            identifier=1,
+            title='Convert 2-digit dates to 4-digit.',
+            description='Prepare for Y2K by updating date storage format',
+            priority=1,
+            target_date=datetime.datetime(1999, 12, 31, 23, 59, 59)
+        )
+
+        # Bill Lumbergh replies in his typical way.
+        comment = Comment(user_id=4, feature_request_id=4,
+                          text="Hello Michael, what's happening? Just make"
+                          "sure to get the cover sheets on the TPS reports.")
+
+        # Set up, test the results.
+        self.db.session.add(fr)
+        self.db.session.add(comment)
+        self.db.session.commit()
+
+        saved_fr = FeatureRequest.query.filter_by(client_id=3, identifier=1).first()
+        saved_comment = Comment.query.filter_by(user_id=4, feature_request_id=4).first()
+
+        assert saved_fr.created
+        assert saved_comment.created
 
     def test_user_full_name(self):
         """Test that the User.full_name property works."""
