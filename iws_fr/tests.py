@@ -42,18 +42,36 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
 
     def test_feature_request_priority_range(self):
         # DB-level FR positive priority constraint
+        # insert ag -random (error)
+        # insert at 0 (error)
+        # insert at 1 (inserted)
+        # insert at +random > 1 (inserted)
         pass
 
     def test_feature_request_priority_duplication(self):
         # DB-level FR unique priority constraint.
+        # insert at 4 (inserted)
+        # insert at 4 (error)
         pass
 
     def test_feature_request_priority_validation(self):
         # App-level FR priority inserts.
+        # TODO: insert should allow any (positive) priority.
+        # TODO: insert over existing priority moves all DIRECTLY above it up one space
+        # insert at 5 (inserted)
+        # insert at 2 (inserted, no change to 5)
+        # insert at 1 (inserted, no change to 2,5)
+        # insert at 0 (error)
+        # insert at -random (error)
+        # insert at 1 (inserted, 1,2 priority moved up, no change to 5)
+        # insert at 6 (inserted)
         pass
 
     def test_feature_request_target_date_validation(self):
         # App-level FR target_date >= today.
+        # inserted < now (error)
+        # inserted at now (inserted)
+        # inserted at now + random (inserted)
         pass
 
     def test_feature_request_identifier_increment(self):
@@ -178,8 +196,6 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         assert bill
         assert bill.full_name == bill_full_name
         assert bill == User.query.filter_by(full_name=bill_full_name).one()
-
-    # TODO: Test restful api available methods?
 
 
 if '__main__' == __name__:

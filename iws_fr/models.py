@@ -69,10 +69,16 @@ class FeatureRequest(db.Model):
     )
 
     __table_args__ = (
+        # TODO: Can we set as callable in constraint?,
+        # TODO: otherwise supply on pre-save insert hook.
+        # db.CheckConstraint(target_date > datetime.datetime.now, name='future_target_date'),
         db.CheckConstraint(priority > 0, name='positive_priority'),
         db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifier'),
         db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
+
+    # TODO: Pre-save validation hook function?
+    # http://docs.sqlalchemy.org/en/latest/orm/events.html
 
     def __str__(self):
         return '<FeatureRequest {}>'.format(self.title)
