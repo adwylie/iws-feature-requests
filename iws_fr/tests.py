@@ -1,6 +1,8 @@
 import datetime
 import os
 import unittest
+import random
+import sys
 import tempfile
 from flask_fixtures import FixturesMixin
 from sqlalchemy.exc import IntegrityError
@@ -41,18 +43,87 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         assert len(users) == User.query.count() == 7
 
     def test_feature_request_priority_range(self):
-        # DB-level FR positive priority constraint
-        # insert ag -random (error)
-        # insert at 0 (error)
-        # insert at 1 (inserted)
-        # insert at +random > 1 (inserted)
-        pass
+        """Ensure that FR's can only have a positive priority value."""
+        # Bill Lumbergh attempts to create some FRs.
+        common_values = {
+            'user_id': 4,
+            'client_id': 3,
+            'target_date': datetime.datetime(2000, 1, 1)
+        }
 
-    def test_feature_request_priority_duplication(self):
-        # DB-level FR unique priority constraint.
-        # insert at 4 (inserted)
-        # insert at 4 (error)
-        pass
+        negative_priority = FeatureRequest(
+            title="Allow a user to enter 'notes' when transferring funds.",
+            priority=random.randint(-sys.maxsize - 1, -2),
+            **common_values
+        )
+        negative_one_priority = FeatureRequest(
+            title="Separate display of pending and posted transactions.",
+            priority=-1,
+            **common_values
+        )
+        zero_priority = FeatureRequest(
+            title='Allow free-form security questions.',
+            priority=0,
+            **common_values
+        )
+        one_priority_title = 'Store passwords as a hash instead of in plain-text format.'
+        one_priority = FeatureRequest(
+            title=one_priority_title,
+            priority=1,
+            **common_values
+        )
+        positive_priority_title = 'Allow social account login using OAuth 2.0.'
+        positive_priority_value = random.randint(2, sys.maxsize)
+        positive_priority = FeatureRequest(
+            title=positive_priority_title,
+            priority=positive_priority_value,
+            **common_values
+        )
+
+        # Attempt to insert FRs.
+        negative_exception = False
+        try:
+            self.db.session.add(negative_priority)
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+            negative_exception = True
+
+        assert negative_exception
+
+        negative_one_exception = False
+        try:
+            self.db.session.add(negative_one_priority)
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+            negative_one_exception = True
+
+        assert negative_one_exception
+
+        zero_exception = False
+        try:
+            self.db.session.add(zero_priority)
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+            zero_exception = True
+
+        assert zero_exception
+
+        self.db.session.add(one_priority)
+        self.db.session.commit()
+
+        saved_one_priority = FeatureRequest.query.filter_by(title=one_priority_title).first()
+        assert saved_one_priority
+        assert saved_one_priority.priority == 1
+
+        self.db.session.add(positive_priority)
+        self.db.session.commit()
+
+        saved_positive_priority = FeatureRequest.query.filter_by(title=positive_priority_title).first()
+        assert saved_positive_priority
+        assert saved_positive_priority.priority == positive_priority_value
 
     def test_feature_request_priority_validation(self):
         # App-level FR priority inserts.
