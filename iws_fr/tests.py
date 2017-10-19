@@ -127,17 +127,179 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
         assert saved_positive_priority.priority == positive_priority_value
 
     def test_feature_request_priority_validation(self):
-        # App-level FR priority inserts.
-        # TODO: insert should allow any (positive) priority.
-        # TODO: insert over existing priority moves all DIRECTLY above it up one space
-        # insert at 5 (inserted)
-        # insert at 2 (inserted, no change to 5)
-        # insert at 1 (inserted, no change to 2,5)
-        # insert at 0 (error)
-        # insert at -random (error)
-        # insert at 1 (inserted, 1,2 priority moved up, no change to 5)
-        # insert at 6 (inserted)
-        pass
+        """Ensure inserts/updates to FR priority works as it should."""
+        # Insert some random FRs, then do an update or two. Check at each
+        # step that the number of elements and their order is correct.
+
+        # Insert at 5 (result: inserted)
+        road_runner_title = 'Beep Beep'
+        road_runner = FeatureRequest(
+            user_id=6, client_id=2, title=road_runner_title,
+            target_date=self.base_date, priority=5)
+        self.db.session.add(road_runner)
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 1
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
+        # Insert at 2 (result: inserted, no other changes)
+        bugs_bunny_title = 'Add Marking to Iron Carrot'
+        bugs_bunny = FeatureRequest(
+            user_id=7, client_id=2, title=bugs_bunny_title,
+            target_date=self.base_date, priority=2)
+        self.db.session.add(bugs_bunny)
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 2
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
+        # Insert at 1 (result: inserted, no other changes)
+        super_outfit_title = "Super Outfit Doesn't Grant Powers"
+        super_outfit = FeatureRequest(
+            user_id=5, client_id=2, title=super_outfit_title,
+            target_date=self.base_date, priority=1)
+        self.db.session.add(super_outfit)
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 3
+
+        saved_super_outfit = FeatureRequest.query.filter_by(priority=1).first()
+        assert saved_super_outfit
+        assert saved_super_outfit.title == super_outfit_title
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
+        # Now some erroneous inserts.
+        giant_kite_title = 'Add German Instructions to Giant Kite Kit'
+        giant_kite_base_opts = {
+            'user_id': 5,
+            'client_id': 2,
+            'title': giant_kite_title,
+            'target_date': self.base_date
+        }
+
+        # Insert at 0 (result: error)
+        insert_exception = False
+        try:
+            giant_kite = FeatureRequest(**giant_kite_base_opts, priority=0)
+            self.db.session.add(giant_kite)
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+            insert_exception = True
+
+        assert insert_exception
+
+        # Insert at -? (result: error)
+        insert_exception = False
+        try:
+            giant_kite = FeatureRequest(
+                **giant_kite_base_opts,
+                priority=random.randint(-sys.maxsize - 1, -1)
+            )
+            self.db.session.add(giant_kite)
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+            insert_exception = True
+
+        assert insert_exception
+
+        # Insert at 1 (result: inserted, old 1+2 moved up, no other changes)
+        giant_kite = FeatureRequest(**giant_kite_base_opts, priority=1)
+        self.db.session.add(giant_kite)
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 4
+
+        saved_giant_kite = FeatureRequest.query.filter_by(priority=1).first()
+        assert saved_giant_kite
+        assert saved_giant_kite.title == giant_kite_title
+
+        saved_super_outfit = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_super_outfit
+        assert saved_super_outfit.title == super_outfit_title
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=3).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
+        # Insert at 4 (result: inserted, no other changes)
+        super_glue_title = 'Include Glue Remover With Super Glue'
+        super_glue = FeatureRequest(
+            user_id=5, client_id=2, title=super_glue_title,
+            target_date=self.base_date, priority=4)
+        self.db.session.add(super_glue)
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 5
+
+        saved_giant_kite = FeatureRequest.query.filter_by(priority=1).first()
+        assert saved_giant_kite
+        assert saved_giant_kite.title == giant_kite_title
+
+        saved_super_outfit = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_super_outfit
+        assert saved_super_outfit.title == super_outfit_title
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=3).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_super_glue = FeatureRequest.query.filter_by(priority=4).first()
+        assert saved_super_glue
+        assert saved_super_glue.title == super_glue_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
+        # Update bugs bunny (priority 3) to have a priority of 1.
+        saved_bugs_bunny.priority = 1
+        self.db.session.add(saved_bugs_bunny)
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 5
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=1).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_giant_kite = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_giant_kite
+        assert saved_giant_kite.title == giant_kite_title
+
+        saved_super_outfit = FeatureRequest.query.filter_by(priority=3).first()
+        assert saved_super_outfit
+        assert saved_super_outfit.title == super_outfit_title
+
+        saved_super_glue = FeatureRequest.query.filter_by(priority=4).first()
+        assert saved_super_glue
+        assert saved_super_glue.title == super_glue_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
 
     def test_feature_request_priority_default(self):
         """Ensure that FRs without priority are given lowest priority."""
