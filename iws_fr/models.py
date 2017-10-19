@@ -1,6 +1,7 @@
 import datetime
 import textwrap
 import flask_restless
+from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
 from sqlalchemy.sql import func
@@ -87,7 +88,7 @@ class FeatureRequest(db.Model):
     __table_args__ = (
         db.CheckConstraint(priority > 0, name='positive_priority'),
         db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifiers'),
-        db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
+        # db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
 
     @validates('target_date')
@@ -102,6 +103,42 @@ class FeatureRequest(db.Model):
 
     def __str__(self):
         return '<FeatureRequest {}>'.format(self.title)
+
+
+@event.listens_for(db.session, 'before_flush')
+def reorder_priorities(session, flush_context, instances):
+    """Check (and update) FR priorities before changes are committed."""
+    # TODO: Multiple overlapping re-orderings can fail, as duplicated
+    # TODO: priorities are not updated more than once (session.add constraint).
+    # TODO: Will not be an issue unless executing batch updates.
+    # Get all frs that could possibly need to be changed.
+    frs = sorted(
+        [x for x in session.new | session.dirty if isinstance(x, FeatureRequest)],
+        key=lambda fr: fr.priority,
+        reverse=True
+    )
+
+    def update_priority(fr, client_id, priority):
+        """Recursively update the priorities of (adjacent) FRs."""
+        duplicate = FeatureRequest.query.filter_by(
+            client_id=client_id,
+            priority=priority
+        ).first()
+
+        # Protect against overrunning what should be a closed loop
+        # (where an updated FR takes the place of the initially moved FR).
+        if duplicate and duplicate.id != fr.id:
+            # Update the next FR (with lower priority) first.
+            update_priority(fr, client_id, priority + 1)
+
+            # Change the current FR after the lower priority FR is updated.
+            duplicate.priority = priority + 1
+            session.add(duplicate)
+
+    # Iterate from lowest priority to highest (highest value to lowest),
+    # move all priority objects up recursively when a duplicate is found.
+    for fr in frs:
+        update_priority(fr, fr.client_id, fr.priority)
 
 
 class Comment(db.Model):

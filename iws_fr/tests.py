@@ -276,7 +276,6 @@ class FlaskTestCase(unittest.TestCase, FixturesMixin):
 
         # Update bugs bunny (priority 3) to have a priority of 1.
         saved_bugs_bunny.priority = 1
-        self.db.session.add(saved_bugs_bunny)
         self.db.session.commit()
 
         assert FeatureRequest.query.count() == 5
