@@ -61,13 +61,9 @@ class FeatureRequest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # Each FR is created by a user in reference to a particular client's software.
+    # Each FR is created by a user in reference to a certain client's software.
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('comments'), lazy=True)
-
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
-    client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
-
     identifier = db.Column(db.Integer, default=next_identifier, nullable=False)
     title = db.Column(db.String(60), nullable=False)
     description = db.Column(db.Text, nullable=True)
@@ -79,12 +75,14 @@ class FeatureRequest(db.Model):
         lazy='subquery',
         backref=db.backref('feature_requests', lazy=True)
     )
-
     created = db.Column(
         db.DateTime,
         default=datetime.datetime.utcnow,
         nullable=False
     )
+
+    user = db.relationship('User', backref=db.backref('comments'), lazy=True)
+    client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
     __table_args__ = (
         db.CheckConstraint(priority > 0, name='positive_priority'),
