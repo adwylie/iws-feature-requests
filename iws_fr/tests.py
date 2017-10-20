@@ -7,8 +7,7 @@ import tempfile
 from flask_fixtures import FixturesMixin
 from sqlalchemy.exc import IntegrityError
 
-from .settings import app
-from .settings import db
+from iws_fr import (app, db)
 from .models import (Client, Comment, FeatureRequest, ProductArea, User)
 
 # Disable info logging in flask_fixtures library.
@@ -16,7 +15,8 @@ import logging
 logging.disable(logging.INFO)
 
 
-class FlaskTestCase(unittest.TestCase, FixturesMixin):
+class ModelsTestCase(unittest.TestCase, FixturesMixin):
+    """Test (database) models and business logic."""
     fixtures = ['clients.json', 'productareas.json', 'users.json']
     app, db = app, db  # Required setup for fixtures to work.
 

@@ -1,4 +1,4 @@
-from .settings import app
+from iws_fr import app
 
 
 # TODO: Templates.

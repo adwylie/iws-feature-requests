@@ -1,9 +1,7 @@
 import argparse
 import unittest
 
-from iws_fr import tests
-from iws_fr.settings import app
-from iws_fr.settings import db
+from iws_fr import (app, db, tests)
 
 
 # TODO: Better argparser creation wrt/ help and documentation.
@@ -21,7 +19,6 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument('command', action='store')
-
 args = parser.parse_args()
 
 if args.command == 'setup':

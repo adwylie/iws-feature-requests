@@ -5,8 +5,8 @@ from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
 from sqlalchemy.sql import func
-from .settings import app
-from .settings import db
+
+from iws_fr import (app, db)
 
 
 # Many-to-many relation (through table) between FeatureRequest and ProductArea.
