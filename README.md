@@ -22,7 +22,7 @@ Tests can also be run using the command `python manage.py test`.
 
 ### Running Production Locally via Heroku
 
-The project is set up to be automatically deployed to Heroku after unit tests pass (on travis). Perhaps for troubleshooting you (well, me actually) can run the project locally using the production database (postgresql). !danger!
+The project is set up to be automatically deployed to Heroku after unit tests pass (on travis). Perhaps for troubleshooting you (well, me actually) can run the project locally using the production database (postgresql).
 
 1. After the first three steps above we need to log into heroku and set an environment variable.
     ```
