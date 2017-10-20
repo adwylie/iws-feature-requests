@@ -1,32 +1,34 @@
 import argparse
 import unittest
 
-from iws_fr import (app, db, tests)
+from iws_fr import app
 
 
-# TODO: Better argparser creation wrt/ help and documentation.
-parser = argparse.ArgumentParser(
-    description='Simple feature requests using Flask/SqlAlchemy/Knockout.',
-    usage="""
-    Type 'manage.py <subcommand> to run a specific command.
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('command', action='store')
 
-    Available subcommands:
+    args = parser.parse_args()
 
-    setup           Creates the database.
-    test            Run unit tests.
-    runserver       Runs a development server.
-    """
-)
+    if args.command == 'test':
+        app.config.from_object('config.TestingConfig')
 
-parser.add_argument('command', action='store')
-args = parser.parse_args()
+        from iws_fr import tests
+        test_suite = unittest.TestLoader().loadTestsFromModule(tests)
+        unittest.TextTestRunner().run(test_suite)
 
-if args.command == 'setup':
-    db.create_all()
+    # TODO: Possibly clean up by having setup w/ arg for which environment.
+    elif args.command == 'setup-dev':
+        app.config.from_object('config.DevelopmentConfig')
+        from iws_fr.models import db
+        db.create_all()
 
-elif args.command == 'test':
-    test_suite = unittest.TestLoader().loadTestsFromModule(tests)
-    unittest.TextTestRunner().run(test_suite)
+    elif args.command == 'setup-prod':
+        app.config.from_object('config.ProductionConfig')
+        from iws_fr.models import db
+        db.create_all()
 
-elif args.command == 'runserver':
-    app.run(host='0.0.0.0')
+    elif args.command == 'runserver':
+        app.config.from_object('config.DevelopmentConfig')
+        import iws_fr.views
+        app.run()

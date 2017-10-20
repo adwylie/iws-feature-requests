@@ -8,6 +8,7 @@ itsdangerous==0.24
 Jinja2==2.9.6
 MarkupSafe==1.0
 mimerender==0.6.0
+psycopg2==2.7.3.1
 python-dateutil==2.6.1
 python-mimeparse==1.6.0
 six==1.11.0

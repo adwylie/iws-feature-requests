@@ -1,14 +1,17 @@
 import datetime
 import os
-import unittest
 import random
 import sys
 import tempfile
+import unittest
+
 from flask_fixtures import FixturesMixin
 from sqlalchemy.exc import IntegrityError
 
-from iws_fr import (app, db)
-from .models import (Client, Comment, FeatureRequest, ProductArea, User)
+from iws_fr import app
+from .models import db
+from .models import (Client, FeatureRequest, Comment, User, ProductArea)
+
 
 # Disable info logging in flask_fixtures library.
 import logging
@@ -21,7 +24,6 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
     app, db = app, db  # Required setup for fixtures to work.
 
     def setUp(self):
-        app.testing = True
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
         self.app = app.test_client()
         self.base_date = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -454,7 +456,7 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         assert saved_roller_skates.title == roller_skates_fr_title
         assert saved_roller_skates.identifier == 3
 
-        # TODO: shouldn't be able to add identifier with space below it.
+        # TODO: Shouldn't be able to add identifier with space below it?
 
     def test_feature_request_comment_created_default(self):
         """Test that the FeatureRequest and Comment 'created' fields are set."""

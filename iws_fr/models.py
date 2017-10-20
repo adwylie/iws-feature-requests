@@ -1,12 +1,13 @@
 import datetime
 import textwrap
-import flask_restless
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
 from sqlalchemy.sql import func
+from flask_sqlalchemy import SQLAlchemy
 
-from iws_fr import (app, db)
+from iws_fr import app
+db = SQLAlchemy(app)
 
 
 # Many-to-many relation (through table) between FeatureRequest and ProductArea.
@@ -174,9 +175,10 @@ class User(db.Model):
     first_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
 
-    @hybrid_property
-    def full_name(self):
-        return self.first_name + ' ' + self.last_name
+    # TODO: Bug here: https://github.com/jfinkels/flask-restless/issues/665
+    # @hybrid_property
+    # def full_name(self):
+    #     return self.first_name + ' ' + self.last_name
 
     def __str__(self):
         return '<User {}>'.format(self.full_name)
@@ -188,9 +190,3 @@ class ProductArea(db.Model):
 
     def __str__(self):
         return '<ProductArea {}>'.format(self.name)
-
-
-# Set up restful api.
-manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
-manager.create_api(Comment, methods=['GET', 'POST', 'DELETE'])
-manager.create_api(FeatureRequest, methods=['GET', 'POST', 'DELETE'])

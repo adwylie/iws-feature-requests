@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{# top bar with search?, fast user switching, fast client switching #}
+{# two rows, 9,3 #}
+{% block content %}
+  <div class="container">
+    {# feature request #}
+    <div class="row">
+      {# attributes (identifier, priority, status?)  1/4 width #}
+      <div class="col-3">
+        <ul></ul>
+      </div>
+      {# title top half, tags list, activity timesince + last comment author #}
+      <div class="col-9">
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script>
+    $.ajax({
+        url: '/api/client',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function(data) { console.log(data.objects); }
+    })
+  </script>
+{% endblock %}
