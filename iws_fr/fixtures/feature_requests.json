@@ -1,0 +1,19 @@
+[
+  {
+    "table": "feature_request",
+    "records": [
+      {
+        "id": 1,
+        "user_id": 3,
+        "client_id": 3,
+        "identifier": 1,
+        "title": "Convert 2-digit dates to 4-digit.",
+        "description": "Prepare for Y2K by updating date storage format",
+        "priority": 1,
+        "target_date": "2020-01-01T18:00:00.000000",
+        "product_areas": [2],
+        "created": "1995-01-01T10:00:00.000000"
+      }
+    ]
+  }
+]

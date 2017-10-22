@@ -1,0 +1,14 @@
+[
+  {
+    "table": "comment",
+    "records": [
+      {
+        "id": 1,
+        "user_id": 4,
+        "feature_request_id": 1,
+        "text": "Hello Michael, what's happening? Just make sure to get the cover sheets on the TPS reports.",
+        "created": "1995-01-04T10:00:00.000000"
+      }
+    ]
+  }
+]

@@ -70,7 +70,7 @@ class FeatureRequest(db.Model):
     title = db.Column(db.String(60), nullable=False)
     description = db.Column(db.Text, nullable=True)
     priority = db.Column(db.Integer, default=next_priority, nullable=False)
-    target_date = db.Column(db.Date, nullable=False)
+    target_date = db.Column(db.DateTime, nullable=False)
     product_areas = db.relationship(
         'ProductArea',
         secondary=fr_pa_map,
