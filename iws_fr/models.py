@@ -143,7 +143,6 @@ def reorder_priorities(session, flush_context, instances):
 class Comment(db.Model):
     """Comment on a feature request."""
     id = db.Column(db.Integer, primary_key=True)
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     feature_request_id = db.Column(db.Integer, db.ForeignKey('feature_request.id'), nullable=False)
     text = db.Column(db.Text, nullable=False)
