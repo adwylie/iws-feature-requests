@@ -4,14 +4,28 @@
 {# two rows, 9,3 #}
 {% block content %}
   <div class="container">
-    {# feature request #}
-    <div class="row">
-      {# attributes (identifier, priority, status?)  1/4 width #}
-      <div class="col-3">
-        <ul></ul>
-      </div>
-      {# title top half, tags list, activity timesince + last comment author #}
-      <div class="col-9">
+    {# data-bind feature request #}
+    <div data-bind="foreach: featureRequests">
+      <div class="row">
+        {# attributes (identifier, priority, status?)  1/4 width #}
+        <div class="col-3">
+          <div data-bind="text: identifier"></div>
+          <div data-bind="text: priority"></div>
+        </div>
+        {# title top half, tags list, activity timesince + last comment author #}
+        <div class="col-9">
+          <h2 data-bind="text: title"></h2>
+          <ul data-bind="foreach: productAreas()">
+            <li data-bind="text: name"></li>
+          </ul>
+          <div data-bind="if: lastModified()">
+            <span data-bind="if: comments.length > 0">modified</span>
+            <span data-bind="if: comments.length == 0">created</span>
+            <span data-bind="text: lastModified().date_relative"></span>
+            by
+            <span data-bind="text: lastModified().user.first_name"></span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -19,12 +33,6 @@
 
 {% block js %}
   {{ super() }}
-  <script>
-    $.ajax({
-        url: '/api/client',
-        dataType: 'json',
-        contentType: 'application/json',
-        success: function(data) { console.log(data.objects); }
-    })
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sugar/2.0.4/sugar.min.js"></script>
+  <script src="static/js/app.js"></script>
 {% endblock %}
