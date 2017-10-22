@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import unittest
 
 from iws_fr import app
@@ -34,7 +35,8 @@ if __name__ == '__main__':
 
         from iws_fr import tests
         test_suite = unittest.TestLoader().loadTestsFromModule(tests)
-        unittest.TextTestRunner().run(test_suite)
+        result = unittest.TextTestRunner().run(test_suite)
+        sys.exit(not result.wasSuccessful())
 
     else:
         app.config.from_object(DevelopmentConfig)
