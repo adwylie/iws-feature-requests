@@ -11,9 +11,15 @@
         "description": "Prepare for Y2K by updating date storage format",
         "priority": 1,
         "target_date": "2020-01-01T18:00:00.000000",
-        "product_areas": [2],
         "created": "1995-01-01T10:00:00.000000"
       }
+    ]
+  },
+  {
+    "table": "fr_pa_map",
+    "records": [
+      { "feature_request_id": 1, "product_area_id": 2 },
+      { "feature_request_id": 1, "product_area_id": 5 }
     ]
   }
 ]
