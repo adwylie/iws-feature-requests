@@ -180,7 +180,7 @@ class User(db.Model):
     #     return self.first_name + ' ' + self.last_name
 
     def __str__(self):
-        return '<User {}>'.format(self.full_name)
+        return '<User {}>'.format(self.first_name + ' ' + self.last_name)
 
 
 class ProductArea(db.Model):
