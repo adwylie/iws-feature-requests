@@ -15,8 +15,9 @@ Unfortunately it's quite rare I complete a personal project from start to finish
     source env/bin/activate
     ```
 3. Install required libraries: `pip install -r requirements.txt`.
-4. Set up the database (sqlite): `python manage.py setup`.
-5. Run the development server: `python manage.py runserver`.
+4. Set up the sqlite database: `python manage.py setup`.
+5. Load data fixtures (optional): `python manage.py loaddata`.
+6. Run the development server: `python manage.py runserver`.
 
 Tests can also be run using the command `python manage.py test`.
 
