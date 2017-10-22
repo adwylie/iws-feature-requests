@@ -42,7 +42,7 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         users = User.query.all()
 
         assert len(clients) == Client.query.count() == 3
-        assert len(product_areas) == ProductArea.query.count() == 4
+        assert len(product_areas) == ProductArea.query.count() == 5
         assert len(users) == User.query.count() == 7
 
     def test_feature_request_priority_range(self):
