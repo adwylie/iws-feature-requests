@@ -83,7 +83,7 @@ class FeatureRequest(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User', backref=db.backref('comments'), lazy=True)
+    user = db.relationship('User', backref=db.backref('feature_requests'), lazy=True)
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
 
     __table_args__ = (
@@ -147,17 +147,16 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('user_comments'), lazy=True)
-
     feature_request_id = db.Column(db.Integer, db.ForeignKey('feature_request.id'), nullable=False)
-    feature_request = db.relationship('FeatureRequest', backref=db.backref('feature_comments'), lazy=True)
-
     text = db.Column(db.Text, nullable=False)
     created = db.Column(
         db.DateTime,
         default=datetime.datetime.utcnow,
         nullable=False
     )
+
+    user = db.relationship('User', backref=db.backref('comments'), lazy=True)
+    feature_request = db.relationship('FeatureRequest', backref=db.backref('comments'), lazy=True)
 
     def __str__(self):
         # String representation includes user name, feature request number,
