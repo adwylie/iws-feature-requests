@@ -1,4 +1,49 @@
+// TODO: comments
 Sugar.extend();
+
+// Refresh data every so often..
+//function ModelDataPoller() {
+//    var INTERVAL = 5000;
+//    var timeout = null;
+//
+//    var poll = function(endpoint) {
+//        request = $.getJSON(endpoint);
+//        request
+//            .done(process)
+//            .always(pollAgain)
+//    };
+//
+//    var process = function(data) {
+//        ko.mapping.fromJS(data.objects, viewModel);
+//    }
+//
+//    var pollAgain = function() {
+//
+//    }
+//};
+
+
+//var data;
+//
+//$.getJSON('/api/feature_request', function(allData) {
+//    data = allData.objects;
+//});
+//
+//var featureRequest = ko.mapping.fromJS(data);
+//
+//ko.mapping.fromJS(data, viewModel);
+//
+//
+//// ...
+//var queryParams = JSON.stringify({
+//    'order_by': [{'field': 'created', 'direction': 'desc'}],
+//    'limit': 1,
+//    'filter': [{'name': 'feature_request_id', 'op': '==', 'val': 1}]
+//});
+//$.getJSON('/api/comment',
+//    {'q': queryParams},
+//    function(data) { console.log(data); }
+//);
 
 function FeatureRequest(data) {
     this.user = ko.observable(data.user);
@@ -16,22 +61,38 @@ function FeatureRequest(data) {
 
     ko.computed(function() {
         var that = this;
-        $.getJSON(
-            '/api/comment/' + this.comments().max('created').id,
-            function (commentData) {
-                var user = commentData.user;
-                var date = new Date(commentData.created);
 
-                that.lastModified({
-                    'user': user,
-                    'date': date,
-                    'date_relative': date.relative()
-                });
-            }
-        );
+        if (this.comments().length > 0) {
+            $.getJSON(
+                '/api/comment/' + this.comments().max('created').id,
+                function (commentData) {
+                    var user = commentData.user;
+                    var date = new Date(commentData.created);
+
+                    that.lastModified({
+                        'user': user,
+                        'date': date,
+                        'date_relative': date.relative()
+                    });
+                }
+            );
+        } else {
+            var date = new Date(that.created());
+
+            that.lastModified({
+                'user': that.user(),
+                'date': date,
+                'date_relative': date.relative()
+            })
+        }
     }, this);
 }
 
+// TODO: models for other ones,
+// TODO: link them together on client-side here?
+// TODO: polling for updates.
+// TODO: gui! - finish display, then need edit + new + delete
+// TODO: sort by priority
 function FeatureRequestListViewModel() {
     var self = this;
     self.featureRequests = ko.observableArray([]);

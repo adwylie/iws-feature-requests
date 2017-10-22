@@ -1,0 +1,33 @@
+.feature-request {
+    margin: 1rem 0;
+}
+
+.feature-request .priority span {
+    text-align: center;
+}
+
+.feature-request .tags ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+.feature-request .tags {
+    display: inline-block;
+}
+
+.feature-request .tags li:first-child {
+    margin-left: 0;
+}
+.feature-request .tags li {
+    display: inline-block;
+    color: #39739d;
+    background-color: #e1ecf4;
+    padding: .1rem .4rem;
+    margin: .1rem;
+}
+
+.feature-request .status {
+    display: inline-block;
+}
+
