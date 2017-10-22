@@ -462,6 +462,7 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         """Test that the FeatureRequest and Comment 'created' fields are set."""
         # Michael Bolton creates first FR for Initech, no product areas.
         fr = FeatureRequest(
+            id=1,
             user_id=3,
             client_id=3,
             identifier=1,
@@ -472,7 +473,7 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         )
 
         # Bill Lumbergh replies in his typical way.
-        comment = Comment(user_id=4, feature_request_id=4,
+        comment = Comment(user_id=4, feature_request_id=1,
                           text="Hello Michael, what's happening? Just make"
                           "sure to get the cover sheets on the TPS reports.")
 
@@ -482,10 +483,11 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         self.db.session.commit()
 
         saved_fr = FeatureRequest.query.filter_by(client_id=3, identifier=1).one()
-        saved_comment = Comment.query.filter_by(user_id=4, feature_request_id=4).one()
+        saved_comment = Comment.query.filter_by(user_id=4, feature_request_id=1).one()
 
         assert saved_fr.created
         assert saved_comment.created
+        assert saved_fr.comments[0].text == saved_comment.text
 
     # TODO: Bug here: https://github.com/jfinkels/flask-restless/issues/665
     #def test_user_full_name(self):
