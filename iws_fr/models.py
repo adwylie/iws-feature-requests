@@ -62,8 +62,6 @@ class FeatureRequest(db.Model):
         return next_priority
 
     id = db.Column(db.Integer, primary_key=True)
-
-    # Each FR is created by a user in reference to a certain client's software.
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     identifier = db.Column(db.Integer, default=next_identifier, nullable=False)
@@ -71,12 +69,6 @@ class FeatureRequest(db.Model):
     description = db.Column(db.Text, nullable=True)
     priority = db.Column(db.Integer, default=next_priority, nullable=False)
     target_date = db.Column(db.DateTime, nullable=False)
-    product_areas = db.relationship(
-        'ProductArea',
-        secondary=fr_pa_map,
-        lazy='subquery',
-        backref=db.backref('feature_requests', lazy=True)
-    )
     created = db.Column(
         db.DateTime,
         default=datetime.datetime.utcnow,
@@ -85,6 +77,12 @@ class FeatureRequest(db.Model):
 
     user = db.relationship('User', backref=db.backref('feature_requests'), lazy=True)
     client = db.relationship('Client', backref=db.backref('feature_requests'), lazy=True)
+    product_areas = db.relationship(
+        'ProductArea',
+        secondary=fr_pa_map,
+        lazy='subquery',
+        backref=db.backref('feature_requests', lazy=True)
+    )
 
     __table_args__ = (
         db.CheckConstraint(priority > 0, name='positive_priority'),
