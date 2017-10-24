@@ -2,6 +2,7 @@
 
 {% block css %}
   {{ super() }}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="static/css/stylesheet.css">
 {% endblock %}
 
@@ -10,31 +11,39 @@
     {# Title/Header. #}
     <div class="row mt-4">
       <div class="col-auto"><h3>Feature Requests</h3></div>
-      <div class="col-auto ml-auto">
+      <div class="col-auto ml-auto gutter-fix">
         {# TODO: select client #}
         <button type="button" class="btn btn-info">New Feature</button>
       </div>
     </div>
     {# Feature requests. #}
-    <div data-bind="foreach: featureRequests">
+    <div class="gutter-fix" data-bind="foreach: featureRequests">
       <div class="row feature-request">
-        <div class="priority">
-          <span data-bind="text: priority"></span>
+        <div class="col-auto">
+          <div class="brdr priority d-flex align-items-center">
+            <div class="m-0 justify-content-center priority-value">
+              <span data-bind="text: priority"></span>
+            </div>
+            <div class="d-flex flex-column brdr priority-control">
+              <div class="bottom fa fa-caret-up"></div>
+              <div class="top fa fa-caret-down"></div>
+            </div>
+          </div>
         </div>
         {# title top half, tags list, activity timesince + last comment author #}
-        <div class="col-auto">
+        <div class="col info py-1">
           <div class="title">
             <h5 class="d-inline" data-bind="text: client().name"></h5>
             <h5 class="d-inline"> - </h5>
             <h5 class="d-inline" data-bind="text: title"></h5>
           </div>
-          <div>
+          <div class="d-flex">
             <div class="tags" data-bind="visible: productAreas().length > 0">
               <ul data-bind="foreach: productAreas()">
                 <li data-bind="text: name"></li>
               </ul>
             </div>
-            <div class="status" data-bind="if: lastModified()">
+            <div class="ml-auto status" data-bind="if: lastModified()">
               {# TODO: Better hover list actual date. #}
               <span data-bind="if: comments.length > 0">modified</span>
               <span data-bind="if: comments.length == 0">created</span>
