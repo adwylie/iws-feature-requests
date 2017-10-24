@@ -171,10 +171,9 @@ class User(db.Model):
     first_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
 
-    # TODO: Bug here: https://github.com/jfinkels/flask-restless/issues/665
-    # @hybrid_property
-    # def full_name(self):
-    #     return self.first_name + ' ' + self.last_name
+    @hybrid_property
+    def full_name(self):
+        return self.first_name + ' ' + self.last_name
 
     def __str__(self):
         return '<User {}>'.format(self.first_name + ' ' + self.last_name)

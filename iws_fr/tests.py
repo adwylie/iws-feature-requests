@@ -489,17 +489,16 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         assert saved_comment.created
         assert saved_fr.comments[0].text == saved_comment.text
 
-    # TODO: Bug here: https://github.com/jfinkels/flask-restless/issues/665
-    #def test_user_full_name(self):
-    #    """Test that the User.full_name property works."""
-    #    bill_id = 4
-    #    bill_full_name = 'Bill Lumbergh'
+    def test_user_full_name(self):
+        """Test that the User.full_name property works."""
+        bill_id = 4
+        bill_full_name = 'Bill Lumbergh'
 
-    #    bill = User.query.get(bill_id)
+        bill = User.query.get(bill_id)
 
-    #    assert bill
-    #    assert bill.full_name == bill_full_name
-    #    assert bill == User.query.filter_by(full_name=bill_full_name).one()
+        assert bill
+        assert bill.full_name == bill_full_name
+        assert bill == User.query.filter_by(full_name=bill_full_name).one()
 
 
 if '__main__' == __name__:
