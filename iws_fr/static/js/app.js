@@ -48,6 +48,9 @@ Comment.mapping = {
     user: {
         create: function (options) {
             return new User(options.data);
+        },
+        key: function (data) {
+            return ko.utils.unwrapObservable(data.id);
         }
     }
 };
@@ -104,17 +107,26 @@ FeatureRequest.mapping = {
     user: {
         create: function (options) {
             return new User(options.data);
+        },
+        key: function (data) {
+            return ko.utils.unwrapObservable(data.id);
         }
     },
     client: {
         create: function (options) {
             return new Client(options.data);
+        },
+        key: function (data) {
+            return ko.utils.unwrapObservable(data.id);
         }
     },
     comments: {
-      create: function (options) {
-          return new Comment(options.data);
-      }
+        create: function (options) {
+            return new Comment(options.data);
+        },
+        key: function (data) {
+            return ko.utils.unwrapObservable(data.id);
+        }
     }
 };
 
