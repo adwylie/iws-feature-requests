@@ -57,8 +57,6 @@ ko.applyBindings(featureRequests);
 
 // TODO: finish gui: need fr view + edit + new + delete
 // TODO: filter by company
-// TODO: priority update
-// TODO: post trigger get update
 var updateFeatureRequests = function () {
     var callback = function(data) {
         ko.mapping.fromJS({ featureRequests: data.objects }, featureRequests);
