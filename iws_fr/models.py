@@ -110,6 +110,48 @@ def reorder_priorities(session, flush_context, instances):
     # TODO: Multiple overlapping re-orderings can fail, as duplicated
     # TODO: priorities are not updated more than once (session.add constraint).
     # TODO: Will not be an issue unless executing batch updates.
+    # Determine the action to take. Either:
+    # 1. The FR exists & is being moved to a location with an existing FR.
+    #  - Find the old and new locations.
+    #  - Work from the new location to the old, recursively moving FRs.
+    #  - We can stop upon reaching the old location or at an empty location.
+
+    # 2. The FR is new and is being added in a location with an existing FR.
+    #  - Work from the new location to +infinity, recursively moving FRs.
+    #  - This is a subset of the previous case.
+
+    # 3. In all other cases the new location doesn't contain an existing FR.
+    #  - Nothing needs to be done.
+
+    def next_priority(current, target):
+        """Return a priority value which is 1 unit closer to the target.
+
+        An omitted (or None) target assumes shifting priorities down (to larger
+        values).
+
+        """
+        if target is None:
+            return current + 1
+        else:
+            return current + ((target - current) // abs(target - current))
+
+    def update_priority(current_priority, end_priority, client_id):
+        """Recursively update the priorities of (adjacent) FRs."""
+        duplicate = FeatureRequest.query.filter_by(
+            client_id=client_id,
+            priority=current_priority
+        ).first()
+
+        if duplicate and current_priority != end_priority:
+            updated_priority = next_priority(current_priority, end_priority)
+
+            # Update the next FR first.
+            update_priority(updated_priority, end_priority, client_id)
+
+            # Then change the current FR.
+            duplicate.priority = updated_priority
+            session.add(duplicate)
+
     # Get all frs that could possibly need to be changed.
     frs = sorted(
         [x for x in session.new | session.dirty if isinstance(x, FeatureRequest)],
@@ -117,27 +159,17 @@ def reorder_priorities(session, flush_context, instances):
         reverse=True
     )
 
-    def update_priority(fr, client_id, priority):
-        """Recursively update the priorities of (adjacent) FRs."""
-        duplicate = FeatureRequest.query.filter_by(
-            client_id=client_id,
-            priority=priority
-        ).first()
-
-        # Protect against overrunning what should be a closed loop
-        # (where an updated FR takes the place of the initially moved FR).
-        if duplicate and duplicate.id != fr.id:
-            # Update the next FR (with lower priority) first.
-            update_priority(fr, client_id, priority + 1)
-
-            # Change the current FR after the lower priority FR is updated.
-            duplicate.priority = priority + 1
-            session.add(duplicate)
-
     # Iterate from lowest priority to highest (highest value to lowest),
-    # move all priority objects up recursively when a duplicate is found.
+    # move all priority objects recursively when a duplicate is found.
     for fr in frs:
-        update_priority(fr, fr.client_id, fr.priority)
+        session.expunge(fr)
+        exists = FeatureRequest.query.filter_by(id=fr.id).first()
+
+        start_priority = fr.priority
+        end_priority = None if not exists else exists.priority
+
+        session.merge(fr)
+        update_priority(start_priority, end_priority, fr.client_id)
 
 
 class Comment(db.Model):
