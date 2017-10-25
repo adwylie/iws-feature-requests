@@ -11,6 +11,9 @@ FeatureRequests.mapping = {
     featureRequests: {
         create: function (options) {
             return new FeatureRequest(options.data);
+        },
+        key: function (data) {
+            return ko.utils.unwrapObservable(data.id);
         }
     }
 };
