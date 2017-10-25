@@ -1,5 +1,6 @@
 Sugar.extend();
 
+// TODO: Move view models out to own file, gets loaded before individual page js.
 function ProductArea(data) {
     var self = this;
 
@@ -13,6 +14,7 @@ ProductArea.mapping = {};
 function User(data) {
     var self = this;
 
+    // TODO: Mapping with different name?
     self.id = ko.observable();
     self.firstName = ko.observable(data.first_name);
     self.lastName = ko.observable(data.last_name);
@@ -53,6 +55,7 @@ Comment.mapping = {
 function FeatureRequest(data) {
     var self = this;
 
+    // TODO: Mapping with different name?
     self.id = ko.observable();
     self.user = ko.observable();
     self.client = ko.observable();
@@ -73,7 +76,6 @@ function FeatureRequest(data) {
 
     // TODO: General: When do I use the parentheses to call observables?
     ko.computed(function() {
-        console.log('in a function!!!');
         if (self.comments().length > 0) {
             $.getJSON(
                 '/api/comment/' + self.comments().max('created').id(),
@@ -139,9 +141,8 @@ var pollingRate = 5000;
 var featureRequests = ko.mapping.fromJS({ featureRequests: []}, FeatureRequests.mapping);
 ko.applyBindings(featureRequests);
 
-// TODO: gui! - finish display, then need edit + new + delete
-// TODO: filter by company, split up slug
-// TODO: redraw doesn't look too good?
+// TODO: finish gui: need fr view + edit + new + delete
+// TODO: filter by company
 // TODO: priority update
 // TODO: post trigger get update
 var updateFeatureRequests = function () {
