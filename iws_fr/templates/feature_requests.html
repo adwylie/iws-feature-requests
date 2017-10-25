@@ -42,8 +42,9 @@
         {# Static FR information #}
         <div class="col info py-1">
           <div class="title">
-            <a data-bind="text: client().name, attr: { href: client().slug }"></a>
-            <a data-bind="text: title, attr: { href: slug }"></a>
+            <a data-bind="text: client().name, click: $parent.filterByClient"></a>
+            <span>-</span>
+            <a data-bind="text: title, attr: { href: '' }"></a>
           </div>
           <div class="d-flex">
             <div class="tags" data-bind="visible: productAreas().length > 0">
