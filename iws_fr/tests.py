@@ -302,6 +302,61 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         assert saved_road_runner
         assert saved_road_runner.title == road_runner_title
 
+        # Update bugs bunny (priority 1) to have a priority of 3.
+        # The feature request should be bubbled up, so new ordering (
+        # indicated with old priorities) would be: [2, 3, 1, 4, 5]
+        saved_bugs_bunny.priority = 3
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 5
+
+        saved_giant_kite = FeatureRequest.query.filter_by(priority=1).first()
+        assert saved_giant_kite
+        assert saved_giant_kite.title == giant_kite_title
+
+        saved_super_outfit = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_super_outfit
+        assert saved_super_outfit.title == super_outfit_title
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=3).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_super_glue = FeatureRequest.query.filter_by(priority=4).first()
+        assert saved_super_glue
+        assert saved_super_glue.title == super_glue_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
+        # Update bugs bunny (priority 3) to have a priority of 4.
+        # The feature requests with priority 3 and 4 should be switched.
+        saved_bugs_bunny.priority = 4
+        self.db.session.commit()
+
+        assert FeatureRequest.query.count() == 5
+
+        saved_giant_kite = FeatureRequest.query.filter_by(priority=1).first()
+        assert saved_giant_kite
+        assert saved_giant_kite.title == giant_kite_title
+
+        saved_super_outfit = FeatureRequest.query.filter_by(priority=2).first()
+        assert saved_super_outfit
+        assert saved_super_outfit.title == super_outfit_title
+
+        saved_super_glue = FeatureRequest.query.filter_by(priority=3).first()
+        assert saved_super_glue
+        assert saved_super_glue.title == super_glue_title
+
+        saved_bugs_bunny = FeatureRequest.query.filter_by(priority=4).first()
+        assert saved_bugs_bunny
+        assert saved_bugs_bunny.title == bugs_bunny_title
+
+        saved_road_runner = FeatureRequest.query.filter_by(priority=5).first()
+        assert saved_road_runner
+        assert saved_road_runner.title == road_runner_title
+
     def test_feature_request_priority_default(self):
         """Ensure that FRs without priority are given lowest priority."""
         # Bill Lumbergh continues to attempt creating some FRs.
