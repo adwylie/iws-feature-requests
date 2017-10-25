@@ -1,17 +1,15 @@
-.brdr.priority { border: 1px solid #e7e7e7; }
-.brdr.priority-control { border-left: 1px solid #e7e7e7; }
-
 .priority-value {
-  padding: .2rem .8rem;
-  font-size: 2rem;
-  font-weight: bold;
-  font-family: monospace;
+    padding: 0 .8em;
+    font-weight: bold;
+    font-size: 2rem;
+    font-family: monospace;
+    border-top: 1px solid rgb(192, 192, 192);
+    border-bottom: 1px solid rgb(192, 192, 192);
+    border-left: 1px solid rgb(192, 192, 192);
 }
-.priority-control .bottom {
-  padding: .65rem .4rem 0 .4rem;
-}
-.priority-control .top {
-  padding: 0 .4rem .65rem .4rem;
+
+.priority-control > button {
+    cursor: pointer;
 }
 
 .feature-request {
@@ -19,7 +17,7 @@
 }
 
 .info {
-    border-top: 1px solid #e7e7e7;
+    border-top: 1px solid rgb(192, 192, 192);
 }
 
 .feature-request .tags ul {
@@ -47,16 +45,8 @@
     display: inline-block;
 }
 
-.gutter-fix {
+.gutter-fix-left {
     margin-left: -15px;
-    margin-right: -15px;
-}
-
-.priority-control > div {
-    cursor: pointer;
-}
-.priority-control > div:hover {
-    /* TODO */
 }
 
 a {
@@ -65,10 +55,12 @@ a {
     font-size: 1.25rem;
     color: black;
 }
+
 a:hover {
     color: #09436d;
     text-decoration: none;
 }
+
 a:active { }
 
 .hover-info { cursor: help; }

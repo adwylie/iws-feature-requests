@@ -79,7 +79,7 @@ function FeatureRequest(data) {
     self.lastModifiedDateRelative = ko.observable();
 
     // TODO: General: When do I use the parentheses to call observables?
-    ko.computed(function() {
+    ko.computed(function () {
         if (self.comments().length > 0) {
             $.getJSON(
                 '/api/comment/' + self.comments().max('created').id(),

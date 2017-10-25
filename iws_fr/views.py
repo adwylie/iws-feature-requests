@@ -16,7 +16,7 @@ def main():
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
 
 manager.create_api(Client, methods=['GET', 'POST', 'DELETE'])
-manager.create_api(FeatureRequest, methods=['GET', 'POST', 'DELETE'])
+manager.create_api(FeatureRequest, methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 manager.create_api(Comment, methods=['GET', 'POST', 'DELETE'])
 manager.create_api(User, methods=['GET', 'POST', 'DELETE'])
 manager.create_api(ProductArea, methods=['GET', 'POST', 'DELETE'])
