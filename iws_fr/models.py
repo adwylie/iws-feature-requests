@@ -1,5 +1,6 @@
 import datetime
 import textwrap
+from slugify import slugify
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
@@ -21,6 +22,10 @@ fr_pa_map = db.Table(
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), nullable=False)
+
+    @hybrid_property
+    def slug(self):
+        return slugify(self.name)
 
     def __str__(self):
         return '<Client {}>'.format(self.name)
@@ -89,6 +94,10 @@ class FeatureRequest(db.Model):
         db.UniqueConstraint('client_id', 'identifier', name='unique_client_identifiers'),
         # db.UniqueConstraint('client_id', 'priority', name='unique_client_priorities')
     )
+
+    @hybrid_property
+    def slug(self):
+        return self.client.slug + '/' + slugify(self.title)
 
     @validates('target_date')
     def validate_future_date(self, key, date):

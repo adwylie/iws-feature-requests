@@ -12,30 +12,38 @@
     <div class="row mt-4">
       <div class="col-auto"><h3>Feature Requests</h3></div>
       <div class="col-auto ml-auto gutter-fix">
-        {# TODO: select client #}
-        <button type="button" class="btn btn-info">New Feature</button>
+        {# TODO: Select dropdown for client? #}
+        <button type="button" class="btn btn-primary">New Feature</button>
       </div>
     </div>
     {# Feature requests. #}
+    <div class="gutter-fix" data-bind="if: featureRequests().length === 0">
+      <div class="row">
+        {# TODO: Better looking display. #}
+        <div class="col-auto mx-auto my-5">
+          No feature requests exist!
+        </div>
+      </div>
+    </div>
     <div class="gutter-fix" data-bind="foreach: featureRequests">
       <div class="row feature-request">
+        {# Priority #}
         <div class="col-auto">
           <div class="brdr priority d-flex align-items-center">
             <div class="m-0 justify-content-center priority-value">
               <span data-bind="text: priority"></span>
             </div>
             <div class="d-flex flex-column brdr priority-control">
-              <div class="bottom fa fa-caret-up"></div>
-              <div class="top fa fa-caret-down"></div>
+              <div class="bottom fa fa-caret-up" data-bind="click: $parent.incrementPriority"></div>
+              <div class="top fa fa-caret-down" data-bind="click: $parent.decrementPriority"></div>
             </div>
           </div>
         </div>
-        {# title top half, tags list, activity timesince + last comment author #}
+        {# Static FR information #}
         <div class="col info py-1">
           <div class="title">
-            <h5 class="d-inline" data-bind="text: client().name"></h5>
-            <h5 class="d-inline"> - </h5>
-            <h5 class="d-inline" data-bind="text: title"></h5>
+            <a data-bind="text: client().name, attr: { href: client().slug }"></a>
+            <a data-bind="text: title, attr: { href: slug }"></a>
           </div>
           <div class="d-flex">
             <div class="tags" data-bind="visible: productAreas().length > 0">
@@ -43,13 +51,12 @@
                 <li data-bind="text: name"></li>
               </ul>
             </div>
-            <div class="ml-auto status" data-bind="if: lastModified()">
-              {# TODO: Better hover list actual date. #}
-              <span data-bind="if: comments.length > 0">modified</span>
-              <span data-bind="if: comments.length == 0">created</span>
-              <span data-bind="text: lastModified().date_relative, attr: { title: lastModified().date }"></span>
+            <div class="ml-auto status">
+              <span>modified</span>
+              <span class="hover-info"
+                    data-bind="text: lastModifiedDateRelative(), attr: { title: lastModifiedDateAbsolute() }"></span>
               by
-              <span data-bind="text: lastModified().user.first_name"></span>
+              <span data-bind="text: lastModifiedBy()"></span>
             </div>
           </div>
         </div>

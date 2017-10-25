@@ -52,3 +52,23 @@
     margin-right: -15px;
 }
 
+.priority-control > div {
+    cursor: pointer;
+}
+.priority-control > div:hover {
+    /* TODO */
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: black;
+}
+a:hover {
+    color: #09436d;
+    text-decoration: none;
+}
+a:active { }
+
+.hover-info { cursor: help; }

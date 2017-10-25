@@ -1,110 +1,162 @@
-// TODO: comments
 Sugar.extend();
 
-// Refresh data every so often..
-//function ModelDataPoller() {
-//    var INTERVAL = 5000;
-//    var timeout = null;
-//
-//    var poll = function(endpoint) {
-//        request = $.getJSON(endpoint);
-//        request
-//            .done(process)
-//            .always(pollAgain)
-//    };
-//
-//    var process = function(data) {
-//        ko.mapping.fromJS(data.objects, viewModel);
-//    }
-//
-//    var pollAgain = function() {
-//
-//    }
-//};
+function ProductArea(data) {
+    var self = this;
 
+    self.id = ko.observable();
+    self.name = ko.observable();
 
-//var data;
-//
-//$.getJSON('/api/feature_request', function(allData) {
-//    data = allData.objects;
-//});
-//
-//var featureRequest = ko.mapping.fromJS(data);
-//
-//ko.mapping.fromJS(data, viewModel);
-//
-//
-//// ...
-//var queryParams = JSON.stringify({
-//    'order_by': [{'field': 'created', 'direction': 'desc'}],
-//    'limit': 1,
-//    'filter': [{'name': 'feature_request_id', 'op': '==', 'val': 1}]
-//});
-//$.getJSON('/api/comment',
-//    {'q': queryParams},
-//    function(data) { console.log(data); }
-//);
+    ko.mapping.fromJS(data, ProductArea.mapping, self);
+}
+ProductArea.mapping = {};
+
+function User(data) {
+    var self = this;
+
+    self.id = ko.observable();
+    self.firstName = ko.observable(data.first_name);
+    self.lastName = ko.observable(data.last_name);
+    self.fullName = ko.observable(data.full_name);
+
+    ko.mapping.fromJS(data, User.mapping, self);
+}
+User.mapping = {};
+
+function Client(data) {
+    var self = this;
+
+    self.id = ko.observable();
+    self.name = ko.observable();
+
+    ko.mapping.fromJS(data, Client.mapping, self);
+}
+Client.mapping = {};
+
+function Comment(data) {
+    var self = this;
+
+    self.id = ko.observable();
+    self.user = ko.observable();
+    self.text = ko.observable();
+    self.created = ko.observable();
+
+    ko.mapping.fromJS(data, Comment.mapping, self);
+}
+Comment.mapping = {
+    user: {
+        create: function (options) {
+            return new User(options.data);
+        }
+    }
+};
 
 function FeatureRequest(data) {
-    this.user = ko.observable(data.user);
-    this.client = ko.observable(data.client);
-    this.identifier = ko.observable(data.identifier);
-    this.title = ko.observable(data.title);
-    this.description = ko.observable(data.description);
-    this.priority = ko.observable(data.priority);
-    this.targetDate = ko.observable(data.target_date);
-    this.productAreas = ko.observable(data.product_areas);
-    this.created = ko.observable(data.created);
-    this.comments = ko.observable(data.comments);
+    var self = this;
 
-    this.lastModified = ko.observable();
+    self.id = ko.observable();
+    self.user = ko.observable();
+    self.client = ko.observable();
+    self.identifier = ko.observable();
+    self.slug = ko.observable();
+    self.title = ko.observable();
+    self.description = ko.observable();
+    self.priority = ko.observable();
+    self.targetDate = ko.observable(data.target_date);
+    self.created = ko.observable();
 
+    self.comments = ko.observableArray();
+    self.productAreas = ko.observableArray(data.product_areas);
+
+    self.lastModifiedBy = ko.observable();
+    self.lastModifiedDateAbsolute = ko.observable();
+    self.lastModifiedDateRelative = ko.observable();
+
+    // TODO: General: When do I use the parentheses to call observables?
     ko.computed(function() {
-        var that = this;
-
-        if (this.comments().length > 0) {
+        console.log('in a function!!!');
+        if (self.comments().length > 0) {
             $.getJSON(
-                '/api/comment/' + this.comments().max('created').id,
-                function (commentData) {
-                    var user = commentData.user;
-                    var date = new Date(commentData.created);
+                '/api/comment/' + self.comments().max('created').id(),
+                function (data) {
+                    // TODO: Map user?
+                    var date = new Date(data.created);
 
-                    that.lastModified({
-                        'user': user,
-                        'date': date,
-                        'date_relative': date.relative()
-                    });
+                    self.lastModifiedBy(data.user.full_name);
+                    self.lastModifiedDateAbsolute(date.long());
+                    self.lastModifiedDateRelative(date.relative());
                 }
             );
         } else {
-            var date = new Date(that.created());
+            // TODO: Set proper locale.
+            var date = new Date(self.created());
 
-            that.lastModified({
-                'user': that.user(),
-                'date': date,
-                'date_relative': date.relative()
-            })
+            self.lastModifiedBy(self.user().fullName);
+            self.lastModifiedDateAbsolute(date.long());
+            self.lastModifiedDateRelative(date.relative());
         }
-    }, this);
-}
-
-// TODO: models for other ones,
-// TODO: link them together on client-side here?
-// TODO: polling for updates.
-// TODO: gui! - finish display, then need edit + new + delete
-// TODO: sort by priority
-function FeatureRequestListViewModel() {
-    var self = this;
-    self.featureRequests = ko.observableArray([]);
-
-    // Load initial data from the database.
-    $.getJSON('/api/feature_request', function(allData) {
-        console.log(allData);
-        var mappedFRs = $.map(allData.objects, function(fr) {
-            return new FeatureRequest(fr);
-        });
-        self.featureRequests(mappedFRs);
     });
-}
 
-ko.applyBindings(new FeatureRequestListViewModel());
+    ko.mapping.fromJS(data, FeatureRequest.mapping, self);
+}
+FeatureRequest.mapping = {
+    user: {
+        create: function (options) {
+            return new User(options.data);
+        }
+    },
+    client: {
+        create: function (options) {
+            return new Client(options.data);
+        }
+    },
+    comments: {
+      create: function (options) {
+          return new Comment(options.data);
+      }
+    }
+};
+
+function FeatureRequests(data) {
+    var self = this;
+
+    self.loaded = ko.observable(false);
+
+    self.featureRequests = ko.observableArray();
+
+    ko.mapping.fromJS(data, FeatureRequests.mapping, self);
+}
+FeatureRequests.mapping = {
+    featureRequests: {
+        create: function (options) {
+            return new FeatureRequest(options.data);
+        }
+    }
+};
+
+var timeout;
+var pollingRate = 5000;
+
+var featureRequests = ko.mapping.fromJS({ featureRequests: []}, FeatureRequests.mapping);
+ko.applyBindings(featureRequests);
+
+// TODO: gui! - finish display, then need edit + new + delete
+// TODO: filter by company, split up slug
+// TODO: redraw doesn't look too good?
+// TODO: priority update
+// TODO: post trigger get update
+var updateFeatureRequests = function () {
+    var callback = function(data) {
+        ko.mapping.fromJS({ featureRequests: data.objects }, featureRequests);
+        timeout = setTimeout(updateFeatureRequests, pollingRate);
+    };
+
+    var queryParams = JSON.stringify({
+       'order_by': [
+           {'field': 'client_id', 'direction': 'asc'},
+           {'field': 'priority', 'direction': 'asc'}
+       ]
+    });
+    $.getJSON('/api/feature_request', {'q': queryParams}, callback);
+};
+
+updateFeatureRequests();
