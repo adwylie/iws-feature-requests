@@ -27,6 +27,7 @@ function FeatureRequestsPage(data) {
     };
 
     self.incrementPriority = function (featureRequest) {
+        // TODO: Fake action client-side?
         updatePriority(featureRequest, featureRequest.priority() + 1);
     };
 
@@ -34,8 +35,12 @@ function FeatureRequestsPage(data) {
         updatePriority(featureRequest, featureRequest.priority() - 1);
     };
 
-    self.filterByClient = function (client) {
-        console.log('TODO: Not implemented yet.');
+    self.filtering = ko.observable(false);
+    self.filteredByClient = ko.observable();
+
+    self.filterByClient = function (featureRequest) {
+        self.filteredByClient(featureRequest.client());
+        self.filtering(true);
     };
 
     ko.mapping.fromJS(data, FeatureRequestsPage.mapping, self);

@@ -1,3 +1,4 @@
+/* TODO: client name hover isn't changing color */
 .priority-value {
     padding: 0 .8em;
     font-weight: bold;
@@ -26,14 +27,13 @@
     list-style-type: none;
 }
 
-.feature-request .tags {
+.tags {
     display: inline-block;
 }
 
-.feature-request .tags li:first-child {
-    margin-left: 0;
-}
-.feature-request .tags li {
+.tag:first-child { margin-left: 0; }
+.tag:last-child { margin-right: 0; }
+.tag {
     display: inline-block;
     color: #39739d;
     background-color: #e1ecf4;

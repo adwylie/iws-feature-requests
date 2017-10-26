@@ -10,7 +10,12 @@
   <div class="container">
     {# Title/Header. #}
     <div class="row mt-4">
-      <div class="col-auto"><h3>Feature Requests</h3></div>
+      <div class="col-auto">
+        <h3>Feature Requests</h3>
+      </div>
+      <div class="col-auto" data-bind="if: filtering">
+          <span class="tag" data-bind="text: filteredByClient().name(), click: filtering.bind($data, 0)"></span>
+      </div>
       <div class="col-auto ml-auto">
         {# TODO: Select dropdown for client? #}
         <button type="button" class="btn btn-primary">New Feature</button>
@@ -26,28 +31,31 @@
       </div>
     </div>
     <div class="gutter-fix-left" data-bind="foreach: featureRequests">
-      <div class="row feature-request">
+      <div class="row feature-request"
+           data-bind="visible: (!$parent.filtering() || ($parent.filtering() && client().name() == $parent.filteredByClient().name()))">
         {# Priority #}
         <div class="col-auto priority d-flex align-items-stretch">
           <div class="priority-value d-flex flex-column justify-content-center">
             <span data-bind="text: priority"></span>
           </div>
           <div class="priority-control d-flex flex-column justify-content-center">
-            <button class="fa fa-caret-up col px-2" data-bind="click: $parent.incrementPriority"></button>
-            <button class="fa fa-caret-down col px-2" data-bind="click: $parent.decrementPriority, enable: priority() != 1"></button>
+            <button class="fa fa-caret-up col px-2" aria-hidden="true"
+                    data-bind="click: $parent.incrementPriority"></button>
+            <button class="fa fa-caret-down col px-2" aria-hidden="true"
+                    data-bind="click: $parent.decrementPriority, enable: priority() != 1"></button>
           </div>
         </div>
         {# Static FR information #}
         <div class="col info py-1">
           <div class="title">
-            <a data-bind="text: client().name, click: $parent.filterByClient"></a>
+            <a data-bind="text: client().name, click: $parent.filterByClient" href="#"></a>
             <span>-</span>
-            <a data-bind="text: title, attr: { href: '' }"></a>
+            <a data-bind="text: title, attr: { href: 'features/' + id() }"></a>
           </div>
           <div class="d-flex">
             <div class="tags" data-bind="visible: productAreas().length > 0">
               <ul data-bind="foreach: productAreas()">
-                <li data-bind="text: name"></li>
+                <li class="tag" data-bind="text: name"></li>
               </ul>
             </div>
             <div class="ml-auto status">
