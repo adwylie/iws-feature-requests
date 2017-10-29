@@ -3,6 +3,11 @@ import os
 
 class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # TODO: check this will work on heroku
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    WTF_CSRF_SECRET_KEY = os.environ.get('SECRET_KEY')
+    RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
+    RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 
 
 class TestingConfig(Config):

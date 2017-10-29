@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    {# Title/Header. #}
+    <div class="row mt-4">
+      <div class="col-auto">
+        {# TODO: link to home page #}
+        <h3>{{ feature_request.title }}</h3>
+      </div>
+      <div class="col-auto ml-auto">
+        {# TODO: reverse url for view #}
+        <a href="/edit/{{ feature_request.id }}/" role="button" class="btn btn-success">Edit</a>
+        <a href="/new/" role="button" class="btn btn-primary">New Feature</a>
+      </div>
+    </div>
+    {# FR content. #}
+    <div class="row">
+      <div class="col">
+        <div>{{ feature_request.description }}</div>
+        <div>{# tags #}</div>
+        <div>{# right side user information #}</div>
+      </div>
+    </div>
+    {# Comments #}
+    {% for comment in comments %}
+    <div class="row comment mt-2">
+      <div class="col">
+        <div>{{ comment.text }}</div>
+        <div>{# right side user information #}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

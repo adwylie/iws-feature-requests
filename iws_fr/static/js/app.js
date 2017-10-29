@@ -1,6 +1,7 @@
 var timeout;
 var pollingRate = 2000;
 
+// TODO: Improve UX for client filtering.
 function FeatureRequestsPage(data) {
     var self = this;
 
@@ -61,7 +62,6 @@ var featureRequests = new FeatureRequestsPage({ featureRequests: []});
 ko.applyBindings(featureRequests);
 
 // TODO: finish gui: need fr view + edit + new + delete
-// TODO: filter by company
 var updateFeatureRequests = function () {
     var callback = function(data) {
         ko.mapping.fromJS({ featureRequests: data.objects }, featureRequests);
