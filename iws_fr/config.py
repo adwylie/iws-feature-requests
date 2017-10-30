@@ -1,9 +1,9 @@
 import os
 
 
+# TODO: Create/load environment variables (steps in README.md).
 class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # TODO: check this will work on heroku
     SECRET_KEY = os.environ.get('SECRET_KEY')
     WTF_CSRF_SECRET_KEY = os.environ.get('SECRET_KEY')
     RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')

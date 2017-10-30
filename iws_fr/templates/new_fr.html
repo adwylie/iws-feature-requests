@@ -10,8 +10,7 @@
       </div>
     </div>
     <div class="row">
-      {# TODO: url reverse for new view. #}
-      <form action="/new/" method="post">
+      <form action="{{ url_for('new') }}" method="post">
         {{ form.csrf_token }}
         <div>{{ form.title.label }} {{ form.title }}</div>
         <div>{{ form.user.label }} {{ form.user }}</div>

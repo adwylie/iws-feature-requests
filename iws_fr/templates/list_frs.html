@@ -18,17 +18,14 @@
       </div>
       <div class="col-auto ml-auto">
         {# TODO: Select dropdown for client? #}
-        {# TODO: reverse url for view #}
-        <a href="/new/" role="button" class="btn btn-primary">New Feature</a>
+        <a href="{{ url_for('new') }}" role="button" class="btn btn-primary">New Feature</a>
       </div>
     </div>
     {# Feature requests. #}
     <div data-bind="if: featureRequests().length === 0">
       <div class="row">
         {# TODO: Better looking display. #}
-        <div class="col-auto mx-auto my-5">
-          No feature requests exist!
-        </div>
+        <div class="col-auto mx-auto my-5">No feature requests exist!</div>
       </div>
     </div>
     <div class="gutter-fix-left" data-bind="foreach: featureRequests">
@@ -51,6 +48,7 @@
           <div class="title">
             <a data-bind="visible: !$parent.filtering(), text: client().name, click: $parent.filterByClient" href="#"></a>
             <span data-bind="visible: !$parent.filtering()">-</span>
+            {# TODO: How to properly build url with client-side code? #}
             <a data-bind="text: title, attr: { href: 'view/' + id() }"></a>
           </div>
           <div class="d-flex">
