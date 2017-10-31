@@ -93,7 +93,10 @@ class FeatureRequest(db.Model):
     @validates('target_date')
     def validate_future_date(self, key, date):
         """Ensure the given date(s) occur in the future."""
-        if date <= datetime.datetime.now():
+        if isinstance(date, datetime.date):
+            date = datetime.datetime.combine(date, datetime.datetime.min.time())
+
+        if date <= datetime.datetime.utcnow():
             raise ValueError(
                 'Value for field {} must occur in the future.'.format(key)
             )

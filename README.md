@@ -15,9 +15,16 @@ Unfortunately it's quite rare I complete a personal project from start to finish
     source env/bin/activate
     ```
 3. Install required libraries: `pip install -r requirements.txt`.
-4. Set up the sqlite database: `python manage.py setup`.
-5. Load data fixtures (optional): `python manage.py loaddata`.
-6. Run the development server: `python manage.py runserver`.
+4. Set up environment variables:
+   ```
+    export SECRET_KEY='verysecret'
+    export WTF_CSRF_SECRET_KEY='verysecret'
+    export RECAPTCHA_PUBLIC_KEY='<public key>'
+    export RECAPTCHA_PRIVATE_KEY='<private key>'
+   ```
+5. Set up the sqlite database: `python manage.py setup`.
+6. Load data fixtures (optional): `python manage.py loaddata`.
+7. Run the development server: `python manage.py runserver`.
 
 Tests can also be run using the command `python manage.py test`.
 
@@ -25,9 +32,10 @@ Tests can also be run using the command `python manage.py test`.
 
 The project is set up to be automatically deployed to Heroku after unit tests pass (on travis). Perhaps for troubleshooting you (well, me actually) can run the project locally using the production database (postgresql).
 
-1. After the first three steps above we need to log into heroku and set an environment variable.
+1. After the first four steps above we need to log into heroku and set an environment variable.
     ```
     heroku auth:login
-    DATABASE_URL=`heroku config:get DATABASE_URL -a adwylie-iws-feature-requests`
+
+    export DATABASE_URL=`heroku config:get DATABASE_URL -a adwylie-iws-feature-requests`
     ```
 2. Then we can continue on to run the server using production db: `heroku local web`.

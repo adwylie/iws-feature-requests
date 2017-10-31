@@ -45,7 +45,6 @@ class FeatureRequestForm(FlaskForm):
 
     product_areas = QuerySelectMultipleField(
         'Product Areas',
-        allow_blank=True,
         query_factory=product_areas_choices,
         get_label='name',
         description='Hold down control (command on mac) to select or '
