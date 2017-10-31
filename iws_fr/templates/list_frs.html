@@ -34,10 +34,11 @@
             <span data-bind="text: priority"></span>
           </div>
           <div class="priority-control d-flex flex-column justify-content-center">
+            {# Note: Decrementing priority value indicates HIGHER priority. #}
             <button class="fa fa-caret-up col px-2" aria-hidden="true"
-                    data-bind="click: $parent.incrementPriority"></button>
-            <button class="fa fa-caret-down col px-2" aria-hidden="true"
                     data-bind="click: $parent.decrementPriority, enable: priority() != 1"></button>
+            <button class="fa fa-caret-down col px-2" aria-hidden="true"
+                    data-bind="click: $parent.incrementPriority"></button>
           </div>
         </div>
         {# Static FR information #}
