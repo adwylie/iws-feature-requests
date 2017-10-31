@@ -5,30 +5,56 @@
     {# Title/Header. #}
     <div class="row mt-4">
       <div class="col-auto">
-        {# TODO: link to home page #}
-        <h3>{{ feature_request.title }}</h3>
+        <a href="{{ url_for('main') }}"><h3>Feature Requests</h3></a>
       </div>
       <div class="col-auto ml-auto">
         <a href="{{ url_for('edit', id=feature_request.id) }}" role="button" class="btn btn-success">Edit</a>
-        <a href="{{ url_for('new') }}" role="button" class="btn btn-primary">New Feature</a>
+        <a href="{{ url_for('edit') }}" role="button" class="btn btn-primary">New Feature</a>
+      </div>
+    </div>
+    <div class="row my-3">
+      <div class="col-auto d-flex align-items-stretch">
+        <h4 class="align-self-end mb-0">{{ feature_request.title }}</h4>
       </div>
     </div>
     {# FR content. #}
-    <div class="row">
+    <div class="row"><div class="col"><div class="border-top"></div></div></div>
+    <div class="row my-4">
+      <div class="col-auto priority">
+        <div class="priority-value">
+          <span>{{ feature_request.priority }}</span>
+        </div>
+      </div>
       <div class="col">
         <div>{{ feature_request.description }}</div>
-        <div>{# tags #}</div>
-        <div>{# right side user information #}</div>
+        <div class="d-flex mt-3">
+          {% if feature_request.product_areas %}
+          <div class="tags">
+            <ul>
+              {% for product_area in feature_request.product_areas %}
+              <li class="tag">{{ product_area.name }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          <div class="ml-auto align-self-end">created by {{ feature_request.user.full_name }}</div>
+        </div>
       </div>
     </div>
+    <div class="row"><div class="col"><div class="border-bottom"></div></div></div>
     {# Comments #}
+    {# TODO: display dates. #}
     {% for comment in comments %}
-    <div class="row comment mt-2">
+    <div class="row my-3">
+      <div class="col-auto"><div class="priority-placeholder"></div></div>
       <div class="col">
         <div>{{ comment.text }}</div>
-        <div>{# right side user information #}</div>
+        <div class="d-flex">
+          <div class="ml-auto">comment by {{ comment.user.full_name }}</div>
+        </div>
       </div>
     </div>
+    <div class="row"><div class="col"><div class="border-bottom"></div></div></div>
     {% endfor %}
   </div>
 {% endblock %}

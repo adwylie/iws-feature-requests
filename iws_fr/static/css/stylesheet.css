@@ -1,4 +1,3 @@
-/* TODO: client name hover isn't changing color */
 .priority-value {
     padding: 0 .8em;
     font-weight: bold;
@@ -9,19 +8,33 @@
     border-left: 1px solid rgb(192, 192, 192);
 }
 
+.priority-value:last-child {
+    border-right: 1px solid rgb(192, 192, 192);
+}
+
 .priority-control > button {
     cursor: pointer;
+}
+
+.priority-placeholder {
+    width: 59px;
+    height: 41px;
 }
 
 .feature-request {
     margin: 1rem 0;
 }
 
-.info {
+.info,
+.border-top {
     border-top: 1px solid rgb(192, 192, 192);
 }
 
-.feature-request .tags ul {
+.border-bottom {
+    border-bottom: 1px solid rgb(192, 192, 192);
+}
+
+.tags ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
@@ -45,9 +58,17 @@
     display: inline-block;
 }
 
-.gutter-fix-left {
-    margin-left: -15px;
+.feedback {
+    margin-top: .25rem;
+    font-size: .875rem;
 }
+
+/* BS4 helpers to fix grid alignment issues. */
+.gutter-fix-left { margin-left: -15px; }
+.gutter-fix-right { margin-right: -15px; }
+.gutter-right { margin-right: 15px; }
+.gutter-left { margin-left: 15px; }
+.gutter { margin-left: 15px; margin-right: 15px; }
 
 a {
     text-decoration: none;

@@ -1,5 +1,4 @@
-# TODO: Is the request import needed for flask-wtf
-from flask import render_template, request
+from flask import render_template, redirect, url_for
 import flask_restless
 
 from iws_fr import app
@@ -8,24 +7,52 @@ from .models import (Client, FeatureRequest, Comment, User, ProductArea)
 from .forms import FeatureRequestForm
 
 
-# TODO: Model forms (wtforms)?
 @app.route('/')
 def main():
     return render_template('list_frs.html')
 
 
 @app.route('/new/', methods=('GET', 'POST'))
-def new():
-    messages = []
+@app.route('/edit/<int:id>/', methods=('GET', 'POST'))
+def edit(id=None):
 
-    form = FeatureRequestForm()
+    if id:
+        fr = FeatureRequest.query.filter_by(id=id).first() or FeatureRequest()
+        form = FeatureRequestForm(obj=fr)
+        title = "Editing '{}'".format(fr.title)
+        action = 'edit'
+    else:
+        fr = FeatureRequest()
+        form = FeatureRequestForm()
+        title = 'Creating a New Feature Request'
+        action = 'create'
 
     if form.validate_on_submit():
-        print('yay!')
-        # Save the form.
-        # Redirect to view the newly-created feature request.
+        try:
+            form.populate_obj(fr)
+        except ValueError as error:
+            form.errors['target_date'] = str(error)
+        else:
+            # TODO: error with created time.
+            db.session.add(fr)
+            db.session.commit()
 
-    return render_template('new_fr.html', form=form, messages=messages)
+            # TODO: Feature request id isn't populated after commit for some
+            # TODO: reason, so we'll just redirect to main page.
+            return redirect(url_for('main'))
+
+    return render_template(
+        'edit_fr.html', form=form, title=title, action=action)
+
+
+@app.route('/delete/<int:id>/')
+def delete(id):
+    fr = FeatureRequest.query.filter_by(id=id).first()
+    if fr:
+        db.session.delete(fr)
+        db.session.commit()
+
+    return redirect(url_for('main'))
 
 
 @app.route('/view/<int:id>/')
@@ -38,11 +65,6 @@ def view(id):
         feature_request=feature_request,
         comments=comments
     )
-
-
-@app.route('/edit/<int:id>/')
-def edit(id):
-    return render_template('edit_fr.html')
 
 
 # Set up restful api.

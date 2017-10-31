@@ -1,4 +1,62 @@
 {% extends "base.html" %}
 
+{% block css %}
+  {{ super() }}
+  {# TODO: Find a datetime picker that works with bs4 b2. :/ #}
+{% endblock %}
+
 {% block content %}
+  <div class="container">
+    {# Title/Header. #}
+    <div class="row mt-4">
+      <div class="col-auto">
+        <a href="{{ url_for('main') }}"><h3>Feature Requests</h3></a>
+      </div>
+      {% if action == 'edit' %}
+      <div class="col-auto ml-auto">
+        <a href="{{ url_for('delete', id=form.data['id']) }}" role="button" class="btn btn-danger">Delete</a>
+      </div>
+      {% endif %}
+    </div>
+    <div class="row my-3">
+      <div class="col-auto">
+        <h5>{{ title }}</h5>
+      </div>
+    </div>
+    <form action="{{ url_for('edit') }}" method="post">
+      {{ form.hidden_tag() }}
+      {% for field in ['title', 'user', 'client', 'priority', 'target_date', 'product_areas', 'description'] %}
+        <div class="form-group row">
+          {{ form[field].label(class='col-form-label col-4 col-sm-3 col-md-2') }}
+          <div class="col">
+            {# Note: Error values are passed back as a tuple of messages. #}
+            {% if form[field].name in form.errors %}
+              {{ form[field](class='form-control is-invalid') }}
+              <div class="invalid-feedback">{{ form.errors[form[field].name][0] }}</div>
+            {% else %}
+              {{ form[field](class='form-control') }}
+            {% endif %}
+            {% if form[field].description %}
+              <div class="feedback">{{ form[field].description }}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      <div class="form-group row">
+        <div class="col-auto">{{ form.recaptcha }}</div>
+        <div class="col">
+          {# Match the recaptcha height to make a nice-looking box. #}
+          {% if action == 'edit' %}
+            <input type="submit" value="Update" class="btn-block btn btn-block btn-primary" style="height: 76px;">
+          {% elif action == 'create' %}
+            <input type="submit" value="Create" class="btn-block btn btn-block btn-primary" style="height: 76px;">
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
 {% endblock %}

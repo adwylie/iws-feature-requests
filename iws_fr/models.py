@@ -169,7 +169,8 @@ def reorder_priorities(session, flush_context, instances):
         end_priority = None if not exists else exists.priority
 
         session.merge(fr)
-        update_priority(start_priority, end_priority, fr.client_id)
+        client_id = fr.client_id or fr.client.id
+        update_priority(start_priority, end_priority, client_id)
 
 
 class Comment(db.Model):

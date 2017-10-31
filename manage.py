@@ -47,6 +47,7 @@ if __name__ == '__main__':
 
         elif args.command == 'loaddata':
             # Note: The load_fixtures function isn't in flask_fixtures public API.
+            # TODO: order may not be correct for loading / fks.
             from iws_fr.models import db
             import json
             from flask_fixtures import load_fixtures
@@ -61,5 +62,14 @@ if __name__ == '__main__':
                     load_fixtures(db, fixture_data)
 
         elif args.command == 'runserver':
+            # TODO: update to flask run cmdline
+            # TODO: libsass to compile css?
+            # https://stackoverflow.com/questions/9508667/reload-flask-app-when-template-file-changes
+            # https://hongminhee.org/libsass-python/
+            # http://flask.pocoo.org/docs/0.12/server/
+            # https://github.com/arnaudlimbourg/heroku-libsass-python
+            # https://codepen.io/adwylie/
+            # https://github.com/postcss/autoprefixer
+            # cssnano
             import iws_fr.views
             app.run()
