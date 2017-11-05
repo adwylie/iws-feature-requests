@@ -43,7 +43,11 @@ class FeatureRequestForm(FlaskForm):
         widget=NumberInput(step=1, min=1)
     )
     target_date = DateTimeField('Target Date', validators=[DataRequired()])
-    description = TextAreaField('Description', validators=[Optional()])
+    description = TextAreaField(
+        'Description',
+        validators=[Optional()],
+        render_kw={'rows': 10}
+    )
 
     product_areas = QuerySelectMultipleField(
         'Product Areas',
