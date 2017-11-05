@@ -61,7 +61,7 @@ FeatureRequestsPage.mapping = {
 var featureRequests = new FeatureRequestsPage({ featureRequests: []});
 ko.applyBindings(featureRequests);
 
-// TODO: finish gui: need fr view + edit + new + delete
+
 var updateFeatureRequests = function () {
     var callback = function(data) {
         ko.mapping.fromJS({ featureRequests: data.objects }, featureRequests);

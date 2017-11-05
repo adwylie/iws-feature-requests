@@ -511,8 +511,6 @@ class ModelsTestCase(unittest.TestCase, FixturesMixin):
         assert saved_roller_skates.title == roller_skates_fr_title
         assert saved_roller_skates.identifier == 3
 
-        # TODO: Shouldn't be able to add identifier with space below it?
-
     def test_feature_request_comment_created_default(self):
         """Test that the FeatureRequest and Comment 'created' fields are set."""
         # Michael Bolton creates first FR for Initech, no product areas.

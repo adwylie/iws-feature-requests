@@ -28,8 +28,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # TODO: Add fixtures for regular data.
-    # TODO: Command to load/dump fixtures.
+    # TODO: Update fixtures.
+    # TODO: Command to dump fixtures?
     if args.command == 'test':
         app.config.from_object(TestingConfig)
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
         elif args.command == 'loaddata':
             # Note: The load_fixtures function isn't in flask_fixtures public API.
-            # TODO: order may not be correct for loading / fks.
+            # TODO: Order isn't be correct for loading. IMPORTANT
             from iws_fr.models import db
             import json
             from flask_fixtures import load_fixtures
@@ -62,7 +62,7 @@ if __name__ == '__main__':
                     load_fixtures(db, fixture_data)
 
         elif args.command == 'runserver':
-            # TODO: update to flask run cmdline
+            # TODO: Update to flask run cmdline.
             # TODO: libsass to compile css?
             # https://stackoverflow.com/questions/9508667/reload-flask-app-when-template-file-changes
             # https://hongminhee.org/libsass-python/

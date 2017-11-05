@@ -110,9 +110,11 @@ class FeatureRequest(db.Model):
 @event.listens_for(db.session, 'before_flush')
 def reorder_priorities(session, flush_context, instances):
     """Check (and update) FR priorities before changes are committed."""
-    # TODO: Multiple overlapping re-orderings can fail, as duplicated
-    # TODO: priorities are not updated more than once (session.add constraint).
-    # TODO: Will not be an issue unless executing batch updates.
+    # TODO:
+    # Multiple overlapping re-orderings can fail, as duplicated
+    # priorities are not updated more than once (session.add constraint).
+    # Will not be an issue unless executing batch updates.
+
     # Determine the action to take. Either:
     # 1. The FR exists & is being moved to a location with an existing FR.
     #  - Find the old and new locations.

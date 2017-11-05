@@ -33,12 +33,13 @@ def edit(id=None):
         except ValueError as error:
             form.errors['target_date'] = str(error)
         else:
-            # TODO: error with created time.
+            # TODO: Error with created time. IMPORTANT
             db.session.add(fr)
             db.session.commit()
 
-            # TODO: Feature request id isn't populated after commit for some
-            # TODO: reason, so we'll just redirect to main page.
+            # TODO:
+            # Feature request id isn't populated after commit for some
+            # reason, so we'll just redirect to main page.
             return redirect(url_for('main'))
 
     return render_template(
