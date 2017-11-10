@@ -20,7 +20,7 @@ logging.disable(logging.INFO)
 
 class ModelsTestCase(unittest.TestCase, FixturesMixin):
     """Test (database) models and business logic."""
-    fixtures = ['clients.json', 'productareas.json', 'users.json']
+    fixtures = ['00_clients.json', '00_productareas.json', '00_users.json']
     app, db = app, db  # Required setup for fixtures to work.
 
     def setUp(self):
