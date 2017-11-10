@@ -97,9 +97,7 @@ class FeatureRequest(db.Model):
             date = datetime.datetime.combine(date, datetime.datetime.min.time())
 
         if date <= datetime.datetime.utcnow():
-            raise ValueError(
-                'Value for field {} must occur in the future.'.format(key)
-            )
+            raise ValueError('Date must occur in the future.')
 
         return date
 
