@@ -43,6 +43,8 @@
         </div>
       {% endfor %}
       <div class="form-group row">
+        {# TODO: Recaptcha looks horrible with small screen sizes. #}
+        <div class="col-4 col-sm-3 col-md-2"></div>
         <div class="col-auto">{{ form.recaptcha }}</div>
         <div class="col">
           {# Match the recaptcha height to make a nice-looking box. #}
