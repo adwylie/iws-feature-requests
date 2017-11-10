@@ -18,7 +18,6 @@ Unfortunately it's quite rare I complete a personal project from start to finish
 4. Set up environment variables:
    ```
     export SECRET_KEY='verysecret'
-    export WTF_CSRF_SECRET_KEY='verysecret'
     export RECAPTCHA_PUBLIC_KEY='<public key>'
     export RECAPTCHA_PRIVATE_KEY='<private key>'
    ```
