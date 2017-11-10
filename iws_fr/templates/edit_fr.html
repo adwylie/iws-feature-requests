@@ -2,9 +2,9 @@
 
 {% block css %}
   {{ super() }}
-  {# TODO: Find a datetime picker that works with Bootstrap 4 Beta-2. #}
 {% endblock %}
 
+{# TODO: Find a datetime picker that works with Bootstrap 4 Beta-2. #}
 {% block content %}
   <div class="container">
     {# Title/Header. #}
@@ -59,4 +59,25 @@
 
 {% block js %}
   {{ super() }}
+  <script type="text/javascript">
+    // TODO: Double-check documentation to see if there's a better way.
+    $(function () {
+      // Convert local time to UTC on submit.
+      $('form').submit(function () {
+        var targetDate = $('#target_date').val();
+        if (targetDate !== '') {
+          var newDate = moment(targetDate).utc().format('YYYY-MM-DD HH:mm:ss');
+          $('#target_date').val(newDate);
+        }
+        return true;
+      });
+
+      // When editing a FR convert the date from UTC to the local timezone.
+      var targetDate = $('#target_date').val();
+      if (targetDate !== '') {
+        var newDate = moment.parseZone(targetDate).local().format('YYYY-MM-DD HH:mm:ss');
+        $('#target_date').val(newDate);
+      }
+    });
+  </script>
 {% endblock %}

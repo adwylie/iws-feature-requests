@@ -31,9 +31,9 @@ def edit(id=None):
         try:
             form.populate_obj(fr)
         except ValueError as error:
-            form.errors['target_date'] = str(error)
+            # TODO: Is there a better way of passing error up from the model?
+            form.errors['target_date'] = [str(error)]
         else:
-            # TODO: Error with created time. IMPORTANT
             db.session.add(fr)
             db.session.commit()
 

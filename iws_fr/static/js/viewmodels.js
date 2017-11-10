@@ -85,20 +85,17 @@ function FeatureRequest(data) {
                 '/api/comment/' + self.comments().max('created').id(),
                 function (data) {
                     // TODO: Map user?
-                    var date = new Date(data.created);
-
+                    var localDate = moment.parseZone(data.created).local();
                     self.lastModifiedBy(data.user.full_name);
-                    self.lastModifiedDateAbsolute(date.long());
-                    self.lastModifiedDateRelative(date.relative());
+                    self.lastModifiedDateAbsolute(localDate);
+                    self.lastModifiedDateRelative(localDate.fromNow());
                 }
             );
         } else {
-            // TODO: Set proper locale.
-            var date = new Date(self.created());
-
+            var localDate = moment.parseZone(self.created()).local();
             self.lastModifiedBy(self.user().fullName);
-            self.lastModifiedDateAbsolute(date.long());
-            self.lastModifiedDateRelative(date.relative());
+            self.lastModifiedDateAbsolute(localDate);
+            self.lastModifiedDateRelative(localDate.fromNow());
         }
     });
 

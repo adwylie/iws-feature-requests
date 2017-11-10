@@ -42,7 +42,12 @@ class FeatureRequestForm(FlaskForm):
         validators=[Optional()],
         widget=NumberInput(step=1, min=1)
     )
-    target_date = DateTimeField('Target Date', validators=[DataRequired()])
+    target_date = DateTimeField(
+        'Target Date',
+        validators=[DataRequired()],
+        description='Please enter the target date using a 24-hour time.',
+        render_kw={'placeholder': '2030-08-20 19:56:20'}
+    )
     description = TextAreaField(
         'Description',
         validators=[Optional()],
