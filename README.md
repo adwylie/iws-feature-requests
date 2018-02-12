@@ -24,7 +24,7 @@ Unfortunately it's quite rare I complete a personal project from start to finish
 5. Set up the sqlite database: `python manage.py setup`.
 6. Load data fixtures (optional): `python manage.py loaddata`.
 7. Run the development server: `python manage.py runserver`.
-8. Lastly, navigate to `http://localhost:5000/` in the web browser of your choice.
+8. Lastly, navigate to `http://127.0.0.1:5000/` in the web browser of your choice.
 
 Tests can also be run using the command `python manage.py test`.
 
