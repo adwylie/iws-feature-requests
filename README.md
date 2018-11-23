@@ -1,4 +1,4 @@
-## IWS Feature Requests [![Build Status](https://travis-ci.org/adwylie/iws-feature-requests.svg?branch=master)](https://travis-ci.org/adwylie/iws-feature-requests) [![Deploy Status](https://heroku-badge.herokuapp.com/?app=adwylie-iws-feature-requests&style=flat&svg=1)](https://adwylie-iws-feature-requests.herokuapp.com/)
+## IWS Feature Requests
 
 Toy project using Flask/SqlAlchemy/Knockout to implement feature requests. Written as part of the application process for a mid-level software engineering position, and also kind of for fun..
 
@@ -27,15 +27,3 @@ Unfortunately it's quite rare I complete a personal project from start to finish
 8. Lastly, navigate to `http://127.0.0.1:5000/` in the web browser of your choice.
 
 Tests can also be run using the command `python manage.py test`.
-
-### Running Production Locally via Heroku
-
-The project is set up to be automatically deployed to Heroku after unit tests pass (on travis). Perhaps for troubleshooting you (well, me actually) can run the project locally using the production database (postgresql).
-
-1. After the first four steps above we need to log into heroku and set an environment variable.
-    ```
-    heroku auth:login
-
-    export DATABASE_URL=`heroku config:get DATABASE_URL -a adwylie-iws-feature-requests`
-    ```
-2. Then we can continue on to run the server using production db: `heroku local web`.
